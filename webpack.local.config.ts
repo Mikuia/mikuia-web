@@ -6,8 +6,8 @@ var fontAwesomePath = __dirname + '/node_modules/font-awesome/css';
 module.exports = {
 
 	entry: [
-        "webpack-hot-middleware/client",
         "react-hot-loader/patch",
+        "webpack-hot-middleware/client",
 		"./src/app"
 	],
 	devServer: {
@@ -21,6 +21,7 @@ module.exports = {
 	},
 
 	plugins: [
+        new webpack.NamedModulesPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
 		new webpack.NoEmitOnErrorsPlugin()
 	],
