@@ -1,0 +1,11 @@
+{
+	"plugins": [
+        "jsx-control-statements",
+        "react-hot-loader/babel"
+    ],
+	"presets": [
+		"env",
+		"react",
+		"stage-0"
+	]
+}
