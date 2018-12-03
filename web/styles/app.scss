@@ -1,6 +1,23 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
+@import url(https://fonts.googleapis.com/css?family=Hind:300,400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
 
-html, body, h1 {
-    font-family: 'Roboto';
-    font-weight: 300;
+$color-error: #ff5252;
+
+html, body {
+    font-family: 'Hind';
+    margin-top: 10px;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.color-error {
+    color: $color-error;
+}
+
+.error {
+    // border-left: 1px solid red;
+    // border-image: linear-gradient(#ff5252, rgba(0, 0, 0, 0));
+    // border-image-slice: 1;
+    border-left: 3px solid $color-error;
 }
