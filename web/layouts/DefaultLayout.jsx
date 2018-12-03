@@ -1,4 +1,5 @@
 import React from 'react';
+import {hot} from 'react-hot-loader';
 
 import Test from '../components/Test';
 
@@ -12,4 +13,4 @@ class DefaultLayout extends React.Component {
     }
 }
 
-export default DefaultLayout
+export default hot(module)(DefaultLayout);
