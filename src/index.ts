@@ -10,7 +10,7 @@ app.get('/dist/bundle.js', (req, res) => {
     if(isProduction) {
         res.sendFile(__dirname + '/../web/public/dist/bundle.js');
     } else {
-        res.redirect('http://' + req.headers.host + ':16835/dist/bundle.js');
+        res.redirect('http://localhost:16835/dist/bundle.js');
     }
 });
 
