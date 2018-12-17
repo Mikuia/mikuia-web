@@ -113,6 +113,9 @@ class DefaultLayout extends React.Component {
 									</NavItem>
 								</When>
 								<Otherwise>
+								<NavItem>
+										<NavLink href="/auth/discord">Login with Discord</NavLink>
+									</NavItem>
 									<NavItem>
 										<NavLink href="/auth/twitch">Login with Twitch</NavLink>
 									</NavItem>

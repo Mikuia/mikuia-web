@@ -4,6 +4,8 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as path from 'path';
 import * as session from 'express-session';
+
+import * as discordStrategy from 'passport-discord';
 import * as twitchStrategy from 'passport-twitch.js';
 
 import {PromisifiedRedisClient} from './typings/redis';
@@ -26,6 +28,8 @@ export class App {
 		this.app.use(bodyParser.json());
 		this.app.use(cookieParser());
 		this.app.use(session({
+			resave: true,
+			saveUninitialized: false,
 			secret: 'please_change_this_later'
 		}));
 		this.app.use(passport.initialize());
@@ -33,6 +37,25 @@ export class App {
 		
 		this.app.use(express.static(path.resolve('web/public')));
 		
+		passport.use(new discordStrategy.Strategy({
+			clientID: settings.services.discord.clientId,
+			clientSecret: settings.services.discord.clientSecret,
+			callbackURL: settings.services.discord.callbackUrl,
+			scope: ['identify']
+		}, async (accessToken, refreshToken, profile, done) => {
+			try {
+				var user = await this.users.findOrCreateByServiceId('discord', profile.id);
+
+				console.log('Logged in as ' + user.id);
+
+				return done(null, user);
+			} catch(e) {
+				console.log('oh shit');
+				return done(null, false);
+			}
+			console.log(profile);
+		}));
+
 		passport.use(new twitchStrategy.Strategy({
 			clientID: settings.services.twitch.clientId,
 			clientSecret: settings.services.twitch.clientSecret,
@@ -72,6 +95,13 @@ export class App {
 
 		this.app.get('/api/*', (req, res) => {
 			res.json({});
+		});
+
+		this.app.get('/auth/discord', passport.authenticate('discord'));
+		this.app.get('/auth/discord/callback', passport.authenticate('discord', {
+			failureRedirect: '/'
+		}), (req, res) => {
+			res.redirect('/');
 		});
 
 		this.app.get('/auth/twitch', passport.authenticate('twitch.js'));
