@@ -1,11 +1,26 @@
 import axios from 'axios';
 import React from 'react';
 import {hot} from 'react-hot-loader';
+import {Redirect, Route} from 'react-router-dom';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Navbar, NavbarBrand, Nav, NavItem, NavLink, Row, UncontrolledDropdown} from 'reactstrap';
+import {LinkContainer} from 'react-router-bootstrap';
 
 import AuthContext from '../components/AuthContext';
+
+import IndexPage from '../pages/IndexPage';
+import SettingsPage from '../pages/SettingsPage';
+
+function PrivateRoute({component: Component, auth, ...rest}) {
+	return (
+		<Route {...rest} render={props => auth.user ? (
+			<Component {...props} />
+		) : (
+			<Redirect to="/" />
+		)} />
+	)
+}
 
 class DefaultLayout extends React.Component {
 	constructor() {
@@ -32,7 +47,7 @@ class DefaultLayout extends React.Component {
 	}
 
 	getAuth() {
-		axios.get('/api/user').then((response) => {
+		axios.get('/api/auth').then((response) => {
 			this.setState({
 				auth: response.data
 			});
@@ -40,14 +55,8 @@ class DefaultLayout extends React.Component {
 	}
 
 	logout() {
-		this.setState({
-			auth: {
-				user: false
-			}
-		}, () => {
-			axios.get('/logout').then((response) => {
-				this.getAuth();
-			});
+		axios.post('/logout').then((response) => {
+			this.getAuth();
 		});
 	}
 
@@ -81,16 +90,14 @@ class DefaultLayout extends React.Component {
 						</NavbarBrand>
 						<Nav className="mr-auto" navbar>
 							<NavItem>
-								<NavLink active href="/">Home</NavLink>
+								<LinkContainer exact to="/">
+									<NavLink>Home</NavLink>
+								</LinkContainer>
 							</NavItem>
 							<NavItem>
-								<NavLink href="/">Poop</NavLink>
-							</NavItem>
-							<NavItem>
-								<NavLink href="/">Butts</NavLink>
-							</NavItem>
-							<NavItem>
-								<NavLink href="/">Dicks</NavLink>
+								<LinkContainer to="/settings">
+									<NavLink>Settings</NavLink>
+								</LinkContainer>
 							</NavItem>
 						</Nav>
 						<Nav className="ml-auto" navbar>
@@ -101,6 +108,12 @@ class DefaultLayout extends React.Component {
 											{this.state.auth.user.id}
 										</DropdownToggle>
 										<DropdownMenu right>
+											<LinkContainer to="/settings">
+												<DropdownItem>
+													Settings
+												</DropdownItem>
+											</LinkContainer>
+											<DropdownItem divider />
 											<DropdownItem onClick={this.logout}>
 												Logout
 											</DropdownItem>
@@ -124,14 +137,12 @@ class DefaultLayout extends React.Component {
 						</Nav>
 					</Container>
 				</Navbar>
-				<Container>
-					<Row>
-						<Col md="12">
-							<h1>Headline</h1>
-							Something interesting.
-						</Col>
-					</Row>
-				</Container>
+
+
+				<Route exact path="/" component={IndexPage} />
+           		<PrivateRoute exact path="/settings" auth={this.state.auth} component={SettingsPage} />
+
+
 			</AuthContext.Provider>
 		)
 	}

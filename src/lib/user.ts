@@ -1,3 +1,4 @@
 export class User {
-	id: string
+	id: string;
+	services: object;
 }

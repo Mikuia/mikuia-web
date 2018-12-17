@@ -22,6 +22,32 @@ export class App {
 		this.app = express();
 		this.users = new Users(this.db);
 
+		this.setupApp();
+		this.setupAuth();
+		this.setupRoutes();
+	}
+
+	async handleAuth(service, profile, done) {
+		await this.users.saveServiceProfile(service, profile.id, profile);
+
+		try {
+			var user = await this.users.findOrCreateByServiceId(service, profile.id);
+
+			console.log('Logged in as ' + user.id);
+
+			user.services = {
+				[service]: profile
+			}
+
+			return done(null, user);
+		} catch(e) {
+			console.log('oh shit');
+			console.log(e);
+			return done(null, false);
+		}
+	}
+
+	setupApp() {
 		this.app.use(bodyParser.urlencoded({
 			extended: true
 		}));
@@ -36,44 +62,27 @@ export class App {
 		this.app.use(passport.session());
 		
 		this.app.use(express.static(path.resolve('web/public')));
-		
+
+		this.app.listen(16834);
+	}
+
+	setupAuth() {
 		passport.use(new discordStrategy.Strategy({
-			clientID: settings.services.discord.clientId,
-			clientSecret: settings.services.discord.clientSecret,
-			callbackURL: settings.services.discord.callbackUrl,
+			clientID: this.settings.services.discord.clientId,
+			clientSecret: this.settings.services.discord.clientSecret,
+			callbackURL: this.settings.services.discord.callbackUrl,
 			scope: ['identify']
 		}, async (accessToken, refreshToken, profile, done) => {
-			try {
-				var user = await this.users.findOrCreateByServiceId('discord', profile.id);
-
-				console.log('Logged in as ' + user.id);
-
-				return done(null, user);
-			} catch(e) {
-				console.log('oh shit');
-				return done(null, false);
-			}
-			console.log(profile);
+			return this.handleAuth('discord', profile, done);
 		}));
 
 		passport.use(new twitchStrategy.Strategy({
-			clientID: settings.services.twitch.clientId,
-			clientSecret: settings.services.twitch.clientSecret,
-			callbackURL: settings.services.twitch.callbackUrl,
+			clientID: this.settings.services.twitch.clientId,
+			clientSecret: this.settings.services.twitch.clientSecret,
+			callbackURL: this.settings.services.twitch.callbackUrl,
 			scope: 'user_read'
 		}, async (accessToken, refreshToken, profile, done) => {
-			try {
-				var user = await this.users.findOrCreateByServiceId('twitch', profile.id);
-
-				console.log('Logged in as ' + user.id);
-
-				return done(null, user);
-			} catch(e) {
-				console.log('oh shit');
-				return done(null, false);
-			}
-			console.log(profile);
-			// return done(null, profile);
+			return this.handleAuth('twitch', profile, done);
 		}));
 		
 		passport.serializeUser((user: User, done: (err, id) => void) => {
@@ -83,13 +92,45 @@ export class App {
 		
 		passport.deserializeUser(async (id: string, done: (err, user) => void) => {
 			console.log('Deserializing from user ID ' + id)
-			var user = await this.users.findById(id);
+			var user = await this.users.findByUserId(id);
 			done(null, user);
 		});
-		
-		this.app.get('/api/user', (req, res) => {
+	}
+
+	setupRoutes() {
+		this.app.get('/api/auth', (req, res) => {
 			res.json({
 				user: req.user ? req.user : null
+			});
+		});
+
+		this.app.get('/api/auth/profile/:service', async (req, res) => {
+			if(!req.isAuthenticated()) return res.json({
+				service: null
+			});
+
+			var services = await this.users.getServicesByUserId(req.user.id);
+
+			if(services[req.params.service] == undefined) return res.json({
+				service: null
+			});
+
+			var profile = await this.users.getServiceProfile(req.params.service, services[req.params.service]);
+
+			console.log(profile);
+
+			res.json({
+				service: profile
+			});
+		});
+
+		this.app.get('/api/auth/services', async (req, res) => {
+			if(!req.isAuthenticated()) res.json({});
+
+			var services = await this.users.getServicesByUserId(req.user.id);
+
+			res.json({
+				services: services
 			});
 		});
 
@@ -111,7 +152,7 @@ export class App {
 			res.redirect('/');
 		});
 
-		this.app.get('/logout', (req, res) => {
+		this.app.post('/logout', (req, res) => {
 			req.logout();
 			res.redirect('/');
 		});
@@ -129,7 +170,5 @@ export class App {
 			console.log(req.user);
 			res.sendFile(path.resolve('src/views/index.html'));
 		});
-		
-		this.app.listen(16834);
 	}
 }
