@@ -1,14 +1,14 @@
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import * as cookieSession from 'cookie-session';
 import * as express from 'express';
 import * as passport from 'passport';
 import * as path from 'path';
+import * as session from 'express-session';
 import * as twitchStrategy from 'passport-twitch.js';
 
-import {Users} from './users';
 import {PromisifiedRedisClient} from './typings/redis';
-import { User } from './user';
+import {User} from './user';
+import {Users} from './users';
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -23,11 +23,13 @@ export class App {
 		this.app.use(bodyParser.urlencoded({
 			extended: true
 		}));
+		this.app.use(bodyParser.json());
 		this.app.use(cookieParser());
-		this.app.use(cookieSession({
+		this.app.use(session({
 			secret: 'please_change_this_later'
 		}));
 		this.app.use(passport.initialize());
+		this.app.use(passport.session());
 		
 		this.app.use(express.static(path.resolve('web/public')));
 		
@@ -42,17 +44,17 @@ export class App {
 
 				console.log('Logged in as ' + user.id);
 
-				return done(false, user);
+				return done(null, user);
 			} catch(e) {
 				console.log('oh shit');
-				return done(new Error('Oh shit.'), null);
+				return done(null, false);
 			}
 			console.log(profile);
 			// return done(null, profile);
 		}));
 		
 		passport.serializeUser((user: User, done: (err, id) => void) => {
-			console.log('Serializing user ' + user.id)
+			console.log('Serializing user ' + user.id);
 			done(null, user.id);
 		});
 		
