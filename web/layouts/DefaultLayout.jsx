@@ -1,17 +1,26 @@
+import axios from 'axios';
 import React from 'react';
 import {hot} from 'react-hot-loader';
 
-import {Col, Container, Navbar, NavbarBrand, Nav, NavItem, NavLink, Row} from 'reactstrap';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Navbar, NavbarBrand, Nav, NavItem, NavLink, Row, UncontrolledDropdown} from 'reactstrap';
 
-import Test from '../components/Test';
+import AuthContext from '../components/AuthContext';
 
 class DefaultLayout extends React.Component {
 	constructor() {
 		super();
 
 		this.state = {
+			auth: {
+				user: false
+			},
 			error: false
 		}
+
+		this.getAuth();
+
+		this.logout = this.logout.bind(this);
 	}
 
 	componentDidCatch(error, info) {
@@ -19,6 +28,26 @@ class DefaultLayout extends React.Component {
 		console.log(info);
 		this.setState({
 			error: true
+		});
+	}
+
+	getAuth() {
+		axios.get('/api/user').then((response) => {
+			this.setState({
+				auth: response.data
+			});
+		});
+	}
+
+	logout() {
+		this.setState({
+			auth: {
+				user: false
+			}
+		}, () => {
+			axios.get('/logout').then((response) => {
+				this.getAuth();
+			});
 		});
 	}
 
@@ -43,7 +72,7 @@ class DefaultLayout extends React.Component {
 		}
 
 		return (
-			<div>
+			<AuthContext.Provider value={this.state.auth}>
 				<Navbar dark color="mikuia" expand="md">
 					<Container>
 						<NavbarBrand href="/">
@@ -65,9 +94,30 @@ class DefaultLayout extends React.Component {
 							</NavItem>
 						</Nav>
 						<Nav className="ml-auto" navbar>
-							<NavItem>
-								<NavLink href="/auth/twitch">Login with Twitch</NavLink>
-							</NavItem>
+							<Choose>
+								<When condition={this.state.auth.user}>
+									<UncontrolledDropdown nav inNavbar>
+										<DropdownToggle nav caret>
+											{this.state.auth.user.id}
+										</DropdownToggle>
+										<DropdownMenu right>
+											<DropdownItem onClick={this.logout}>
+												Logout
+											</DropdownItem>
+										</DropdownMenu>
+									</UncontrolledDropdown>
+								</When>
+								<When condition={this.state.auth.user === false}>
+									<NavItem>
+										<FontAwesomeIcon icon={['fas', 'spinner']} spin={true} />
+									</NavItem>
+								</When>
+								<Otherwise>
+									<NavItem>
+										<NavLink href="/auth/twitch">Login with Twitch</NavLink>
+									</NavItem>
+								</Otherwise>
+							</Choose>
 						</Nav>
 					</Container>
 				</Navbar>
@@ -79,7 +129,7 @@ class DefaultLayout extends React.Component {
 						</Col>
 					</Row>
 				</Container>
-			</div>
+			</AuthContext.Provider>
 		)
 	}
 }

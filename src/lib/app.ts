@@ -64,6 +64,16 @@ export class App {
 			done(null, user);
 		});
 		
+		this.app.get('/api/user', (req, res) => {
+			res.json({
+				user: req.user ? req.user : null
+			});
+		});
+
+		this.app.get('/api/*', (req, res) => {
+			res.json({});
+		});
+
 		this.app.get('/auth/twitch', passport.authenticate('twitch.js'));
 		this.app.get('/auth/twitch/callback', passport.authenticate('twitch.js', {
 			failureRedirect: '/'

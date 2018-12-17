@@ -39,6 +39,7 @@
 		"@types/passport": "^0.4.7",
 		"@types/redis": "^2.8.8",
 		"@types/zeromq": "^4.6.1",
+		"axios": "^0.18.0",
 		"babel-loader": "^8.0.4",
 		"babel-plugin-jsx-control-statements": "^4.0.0",
 		"bootstrap": "^4.1.3",
