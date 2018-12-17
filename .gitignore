@@ -1,3 +1,4 @@
 .vscode/
 node_modules/
 web/public/dist
+settings.json
