@@ -1,0 +1,18 @@
+@mixin button-service($service-color) {
+	background-color: transparentize($service-color, 0.5);
+	border: 1px solid $service-color;
+	border-radius: 0px;
+	color: white;
+	
+	&:focus {
+		box-shadow: 0 0 0 0.2rem transparentize($service-color, 0.75);
+	}
+}
+
+.btn-service-discord {
+	@include button-service($color-service-discord);
+}
+
+.btn-service-twitch {
+	@include button-service($color-service-twitch);
+}

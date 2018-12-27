@@ -98,11 +98,21 @@ class SettingsPage extends React.Component {
 										</For>
 
 										<If condition={this.state.services.twitch == undefined}>
-											<Button>Connect with Twitch</Button>
+											<a href="/connect/twitch">
+												<Button color="service-twitch">
+													<FontAwesomeIcon className="mr-2" icon={['fab', 'twitch']} />
+													Connect with Twitch
+												</Button>
+											</a>
 										</If>
 
 										<If condition={this.state.services.discord == undefined}>
-											<Button>Connect with Discord</Button>
+											<a href="/connect/discord">
+												<Button color="service-discord">
+													<FontAwesomeIcon className="mr-2" icon={['fab', 'discord']} />
+													Connect with Discord
+												</Button>
+											</a>
 										</If>
 
 									</Otherwise>
@@ -131,7 +141,7 @@ class SettingsPage extends React.Component {
 					</Media>
 					<span dangerouslySetInnerHTML={{__html: data.details}} />
 					<br />
-					<Button color="service" size="sm" onClick={() => this.unlinkService(data.service)}>Unlink</Button>
+					<Button color={"service-" + data.service} size="sm" onClick={() => this.unlinkService(data.service)}>Unlink</Button>
 				</Media>
 			</Media>
 		)

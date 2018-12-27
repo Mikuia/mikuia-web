@@ -1,15 +1,4 @@
 @mixin settings-connections-service($service-color) {
 	background-color: transparentize($service-color, 0.5);
     border: 1px solid transparentize($service-color, 0.1);
-
-    .btn-service {
-        background-color: transparentize($service-color, 0.5);
-        border: 1px solid $service-color;
-        border-radius: 0px;
-		color: white;
-		
-		&:focus {
-			box-shadow: 0 0 0 0.2rem transparentize($service-color, 0.75);
-		}
-    }
 }
