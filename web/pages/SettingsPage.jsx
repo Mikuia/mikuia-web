@@ -3,7 +3,7 @@ import React from 'react';
 import {hot} from 'react-hot-loader';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Col, Container, Media, Row} from 'reactstrap';
+import {Button, Col, Container, Media, Row} from 'reactstrap';
 
 import AuthContext from '../components/AuthContext';
 
@@ -57,12 +57,12 @@ class SettingsPage extends React.Component {
 								<h1>Settings</h1>
 								<br />
 								
-								<h4>Your Acccount</h4>
+								<h4>Account</h4>
 								User ID: <b>{this.props.auth.user.id}</b>
 
 								<br /><br />
 
-								<h4>Your Connected Services</h4>
+								<h4>Connections</h4>
 								<Choose>
 									<When condition={this.state.services === false}>
 										<FontAwesomeIcon className="mr-2" icon={['fas', 'spinner']} spin={true} />
@@ -94,6 +94,15 @@ class SettingsPage extends React.Component {
 											</With>
 											<br />
 										</For>
+
+										<If condition={this.state.services.twitch == undefined}>
+											<Button>Connect with Twitch</Button>
+										</If>
+
+										<If condition={this.state.services.discord == undefined}>
+											<Button>Connect with Discord</Button>
+										</If>
+
 									</Otherwise>
 								</Choose>
 							</When>
@@ -109,7 +118,7 @@ class SettingsPage extends React.Component {
 	
 	renderServiceDetails(data) {
 		return (
-			<Media key={data.service}>
+			<Media className={"SettingsPage-Connections-Service SettingsPage-Connections-Service-" + data.service} key={data.service}>
 				<Media left>
 					<Media object src={data.avatar} height="64" width="64" />
 				</Media>
@@ -119,6 +128,8 @@ class SettingsPage extends React.Component {
 						{data.name}
 					</Media>
 					<span dangerouslySetInnerHTML={{__html: data.details}} />
+					<br />
+					<Button color="service" size="sm">Unlink</Button>
 				</Media>
 			</Media>
 		)

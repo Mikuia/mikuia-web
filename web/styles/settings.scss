@@ -1,0 +1,14 @@
+@import 'mixins/settings/connections/service.scss';
+
+.SettingsPage-Connections-Service {
+	@include settings-connections-service(white);
+	padding: 15px;
+}
+
+.SettingsPage-Connections-Service-discord {
+	@include settings-connections-service($color-service-discord);
+}
+
+.SettingsPage-Connections-Service-twitch {
+    @include settings-connections-service($color-service-twitch);
+}
