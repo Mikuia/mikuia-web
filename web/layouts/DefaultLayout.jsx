@@ -140,7 +140,7 @@ class DefaultLayout extends React.Component {
 
 
 				<Route exact path="/" component={IndexPage} />
-           		<PrivateRoute exact path="/settings" auth={this.state.auth} component={SettingsPage} />
+           		<PrivateRoute path="/settings" auth={this.state.auth} component={SettingsPage} />
 
 
 			</AuthContext.Provider>

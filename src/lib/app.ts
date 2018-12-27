@@ -156,14 +156,14 @@ export class App {
 		this.app.get('/auth/discord/callback', passport.authenticate('discord', {
 			failureRedirect: '/'
 		}), (req, res) => {
-			res.redirect('/');
+			res.redirect('/settings');
 		});
 
 		this.app.get('/auth/twitch', passport.authenticate('twitch.js'));
 		this.app.get('/auth/twitch/callback', passport.authenticate('twitch.js', {
 			failureRedirect: '/'
 		}), (req, res) => {
-			res.redirect('/');
+			res.redirect('/settings');
 		});
 
 		this.app.get('/connect/discord', passport.authorize('discord'));
