@@ -57,6 +57,14 @@ export class Users {
 		});
 	}
 
+	async getServiceIdByUserId(userId: string, service: string) {
+		return new Promise<string>(async (resolve, reject) => {
+			var serviceId = await this.db.hgetAsync('user:' + userId + ':services', service);
+
+			resolve(serviceId);
+		});
+	}
+
 	async getServiceProfile(service: string, serviceId: string) {
 		return new Promise<object>(async (resolve, reject) => {
 			var profile = await this.db.hgetallAsync('service:' + service + ':user:' + serviceId);
@@ -85,6 +93,20 @@ export class Users {
 	async saveServiceProfile(service: string, serviceId: string, profile: object) {
 		return new Promise(async (resolve) => {
 			await this.db.hmsetAsync('service:' + service + ':user:' + serviceId, profile);
+
+			resolve();
+		});
+	}
+
+	async unlinkServiceByUserId(userId: string, service: string) {
+		return new Promise(async (resolve) => {
+			var serviceId = await this.getServiceIdByUserId(userId, service);
+
+			if(serviceId) {
+				await this.db.hdelAsync('users:service:' + service, serviceId);
+				await this.db.hdelAsync('user:' + userId + ':services', service);
+				await this.db.delAsync('service:' + service + ':user:' + serviceId);
+			}
 
 			resolve();
 		});

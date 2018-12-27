@@ -22,6 +22,8 @@ class SettingsPage extends React.Component {
 		}
 
 		this.getServices();
+
+		this.unlinkService = this.unlinkService.bind(this);
 	}
 
 	getProfile(service) {
@@ -129,7 +131,7 @@ class SettingsPage extends React.Component {
 					</Media>
 					<span dangerouslySetInnerHTML={{__html: data.details}} />
 					<br />
-					<Button color="service" size="sm">Unlink</Button>
+					<Button color="service" size="sm" onClick={() => this.unlinkService(data.service)}>Unlink</Button>
 				</Media>
 			</Media>
 		)
@@ -152,6 +154,12 @@ class SettingsPage extends React.Component {
 					details: 'Display Name: <b>' + this.state.profiles.twitch.display_name + '</b><br />Username: <b>' + this.state.profiles.twitch.login + '</b><br />User ID: <b>' + this.state.profiles.twitch.id + '</b>'
 				});
 		}
+	}
+
+	unlinkService(service) {
+		axios.post('/disconnect/' + service).then((response) => {
+			this.getServices();
+		});
 	}
 }
 

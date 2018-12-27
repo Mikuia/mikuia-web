@@ -48,7 +48,7 @@ export class App {
 			}
 		} else {
 			try {
-				this.users.linkWithServiceId(req.user.id, service, profile.id);
+				await this.users.linkWithServiceId(req.user.id, service, profile.id);
 
 				return done(null, req.user);
 			} catch(e) {
@@ -169,6 +169,12 @@ export class App {
 		this.app.get('/connect/discord', passport.authorize('discord'));
 		this.app.get('/connect/twitch', passport.authorize('twitch.js'));
 		
+		this.app.post('/disconnect/:service', async (req, res) => {
+			await this.users.unlinkServiceByUserId(req.user.id, req.params.service);
+
+			res.send(200);
+		});
+
 		this.app.post('/logout', (req, res) => {
 			req.logout();
 			res.redirect('/');
