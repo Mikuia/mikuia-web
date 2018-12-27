@@ -92,6 +92,7 @@ class SettingsPage extends React.Component {
 													</Otherwise>
 												</Choose>
 											</With>
+											<br />
 										</For>
 									</Otherwise>
 								</Choose>

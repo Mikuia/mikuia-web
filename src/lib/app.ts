@@ -27,23 +27,35 @@ export class App {
 		this.setupRoutes();
 	}
 
-	async handleAuth(service, profile, done) {
+	async handleAuth(service, req, profile, done) {
 		await this.users.saveServiceProfile(service, profile.id, profile);
 
-		try {
-			var user = await this.users.findOrCreateByServiceId(service, profile.id);
+		if(!req.user) {
+			try {
+				var user = await this.users.findOrCreateByServiceId(service, profile.id);
 
-			console.log('Logged in as ' + user.id);
+				console.log('Logged in as ' + user.id);
 
-			user.services = {
-				[service]: profile
+				user.services = {
+					[service]: profile
+				}
+
+				return done(null, user);
+			} catch(e) {
+				console.log('oh shit, something failed with new user login.');
+				console.log(e);
+				return done(null, false);
 			}
+		} else {
+			try {
+				this.users.linkWithServiceId(req.user.id, service, profile.id);
 
-			return done(null, user);
-		} catch(e) {
-			console.log('oh shit');
-			console.log(e);
-			return done(null, false);
+				return done(null, req.user);
+			} catch(e) {
+				console.log('oh shit, something fucked up when linking accounts.');
+				console.log(e);
+				return done(null, false);
+			}
 		}
 	}
 
@@ -71,18 +83,20 @@ export class App {
 			clientID: this.settings.services.discord.clientId,
 			clientSecret: this.settings.services.discord.clientSecret,
 			callbackURL: this.settings.services.discord.callbackUrl,
+			passReqToCallback: true,
 			scope: ['identify']
-		}, async (accessToken, refreshToken, profile, done) => {
-			return this.handleAuth('discord', profile, done);
+		}, async (req, accessToken, refreshToken, profile, done) => {
+			return this.handleAuth('discord', req, profile, done);
 		}));
 
 		passport.use(new twitchStrategy.Strategy({
 			clientID: this.settings.services.twitch.clientId,
 			clientSecret: this.settings.services.twitch.clientSecret,
 			callbackURL: this.settings.services.twitch.callbackUrl,
+			passReqToCallback: true,
 			scope: 'user_read'
-		}, async (accessToken, refreshToken, profile, done) => {
-			return this.handleAuth('twitch', profile, done);
+		}, async (req, accessToken, refreshToken, profile, done) => {
+			return this.handleAuth('twitch', req, profile, done);
 		}));
 		
 		passport.serializeUser((user: User, done: (err, id) => void) => {
@@ -152,6 +166,9 @@ export class App {
 			res.redirect('/');
 		});
 
+		this.app.get('/connect/discord', passport.authorize('discord'));
+		this.app.get('/connect/twitch', passport.authorize('twitch.js'));
+		
 		this.app.post('/logout', (req, res) => {
 			req.logout();
 			res.redirect('/');
