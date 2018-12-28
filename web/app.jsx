@@ -11,7 +11,8 @@ import DefaultLayout from './layouts/DefaultLayout';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'noty/src/noty.scss';
-import 'noty/src/themes/nest.scss';
+import './styles/external/noty-mikuia.scss';
+
 import './styles/app.scss';
 
 library.add(faDiscord);

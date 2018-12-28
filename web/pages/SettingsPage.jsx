@@ -166,7 +166,7 @@ class SettingsPage extends React.Component {
 		if(Object.keys(this.state.services).length < 2) {
 			new Noty({
 				layout: 'topCenter',
-				theme: 'nest',
+				theme: 'mikuia',
 				timeout: 3000,
 				type: 'error',
 				text: 'Cannot unlink your only connection.'

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Noty from 'noty';
 import React from 'react';
 import {hot} from 'react-hot-loader';
 import {Redirect, Route} from 'react-router-dom';
@@ -44,6 +45,22 @@ class DefaultLayout extends React.Component {
 		this.setState({
 			error: true
 		});
+	}
+
+	componentDidMount() {
+		window.addEventListener('storage', (e) => {
+			if(e.storageArea === localStorage && e.key == 'loggedIn') {
+				new Noty({
+					layout: 'topCenter',
+					theme: 'mikuia',
+					timeout: 3000,
+					type: 'warning',
+					text: 'Session changed, refreshing login info...'
+				}).show();
+
+				this.getAuth();
+			}
+		})
 	}
 
 	getAuth() {
