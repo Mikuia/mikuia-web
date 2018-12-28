@@ -12,3 +12,8 @@
 .SettingsPage-Connections-Service-twitch {
     @include settings-connections-service($color-service-twitch);
 }
+
+.SettingsPage-Connections-Service h4 {
+	font-size: 20px;
+	font-weight: 300;
+}

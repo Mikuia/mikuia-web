@@ -53,7 +53,7 @@ class SettingsPage extends React.Component {
         return (
             <Container>
 				<Row>
-					<Col md="12">
+					<Col md="6" sm="12">
 						<Choose>
 							<When condition={this.props.auth.user}>
 								<h1>Settings</h1>
@@ -139,8 +139,6 @@ class SettingsPage extends React.Component {
 						<FontAwesomeIcon className="mr-2" icon={['fab', data.service]} />
 						{data.name}
 					</Media>
-					<span dangerouslySetInnerHTML={{__html: data.details}} />
-					<br />
 					<Button color={"service-" + data.service} size="sm" onClick={() => this.unlinkService(data.service)}>Unlink</Button>
 				</Media>
 			</Media>
@@ -152,16 +150,13 @@ class SettingsPage extends React.Component {
 			case 'discord':
 				return this.renderServiceDetails({
 					service: service,
-					name: 'Discord',
-					avatar: 'https://cdn.discordapp.com/avatars/' + this.state.profiles.discord.id + '/' + this.state.profiles.discord.avatar + '.png',
-					details: 'Tag: <b>' + this.state.profiles.discord.username + '#' + this.state.profiles.discord.discriminator + '</b><br />User ID: <b>' + this.state.profiles.discord.id + '</b>'
-				});
+					name: this.state.profiles.discord.username + '#' + this.state.profiles.discord.discriminator,
+					avatar: 'https://cdn.discordapp.com/avatars/' + this.state.profiles.discord.id + '/' + this.state.profiles.discord.avatar + '.png'				});
 			case 'twitch':
 				return this.renderServiceDetails({
 					service: service,
-					name: 'Twitch',
-					avatar: this.state.profiles.twitch.profile_image_url,
-					details: 'Display Name: <b>' + this.state.profiles.twitch.display_name + '</b><br />Username: <b>' + this.state.profiles.twitch.login + '</b><br />User ID: <b>' + this.state.profiles.twitch.id + '</b>'
+					name: this.state.profiles.twitch.display_name,
+					avatar: this.state.profiles.twitch.profile_image_url
 				});
 		}
 	}
