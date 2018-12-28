@@ -52,6 +52,7 @@
 		"font-awesome": "^4.7.0",
 		"node-sass": "^4.10.0",
 		"nodemon": "^1.18.7",
+		"noty": "^3.2.0-beta",
 		"react": "^16.6.3",
 		"react-dom": "^16.6.3",
 		"react-hot-loader": "^4.3.12",

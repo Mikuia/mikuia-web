@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Noty from 'noty';
 import React from 'react';
 import {hot} from 'react-hot-loader';
 
@@ -162,9 +163,19 @@ class SettingsPage extends React.Component {
 	}
 
 	unlinkService(service) {
-		axios.post('/disconnect/' + service).then((response) => {
-			this.getServices();
-		});
+		if(Object.keys(this.state.services).length < 2) {
+			new Noty({
+				layout: 'topCenter',
+				theme: 'nest',
+				timeout: 3000,
+				type: 'error',
+				text: 'Cannot unlink your only connection.'
+			}).show();
+		} else {
+			axios.post('/disconnect/' + service).then((response) => {
+				this.getServices();
+			});
+		}
 	}
 }
 
