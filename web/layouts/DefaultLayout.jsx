@@ -48,6 +48,8 @@ class DefaultLayout extends React.Component {
 
 	getAuth() {
 		axios.get('/api/auth').then((response) => {
+			localStorage.setItem('loggedIn', response.data.user ? true : false);
+
 			this.setState({
 				auth: response.data
 			});
@@ -66,7 +68,7 @@ class DefaultLayout extends React.Component {
 				<Container>
 					<Row>
 						<Col md={{size: 6, offset: 3}}>
-							<div >
+							<div>
 								<Row>
 									<Col className="error">
 										<h4 className="color-error mt-1 mb-0">Error</h4>
@@ -138,10 +140,17 @@ class DefaultLayout extends React.Component {
 					</Container>
 				</Navbar>
 
-
-				<Route exact path="/" component={IndexPage} />
-           		<PrivateRoute path="/settings" auth={this.state.auth} component={SettingsPage} />
-
+				<Choose>
+					<When condition={this.state.auth.user === false}>
+						<div className="align-center">
+							<FontAwesomeIcon icon={['fas', 'spinner']} spin={true} />
+						</div>
+					</When>
+					<Otherwise>
+						<Route exact path="/" component={IndexPage} />
+           				<PrivateRoute path="/settings" auth={this.state.auth} component={SettingsPage} />
+					</Otherwise>
+				</Choose>
 
 			</AuthContext.Provider>
 		)
