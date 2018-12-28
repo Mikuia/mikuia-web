@@ -170,7 +170,12 @@ export class App {
 		this.app.get('/connect/twitch', passport.authorize('twitch.js'));
 		
 		this.app.post('/disconnect/:service', async (req, res) => {
-			await this.users.unlinkServiceByUserId(req.user.id, req.params.service);
+			if(!req.isAuthenticated()) res.send(403);
+
+			var services = await this.users.getServicesByUserId(req.user.id);
+			if(Object.keys(services).length > 1) {
+				await this.users.unlinkServiceByUserId(req.user.id, req.params.service);
+			}
 
 			res.send(200);
 		});
