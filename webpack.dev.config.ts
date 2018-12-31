@@ -17,10 +17,11 @@ module.exports = merge(common, {
 		host: '0.0.0.0',
 		hotOnly: true,
 		port: 16835,
-		publicPath: 'http://localhost:16835/dist/'
+		publicPath: 'http://localhost:16835/'
 	},
 	output: {
-		publicPath: 'http://localhost:16835/dist/',
+		publicPath: 'http://localhost:16835/',
+		filename: 'js/bundle.js'
 	},
 	plugins: [
 		new webpack.HotModuleReplacementPlugin()

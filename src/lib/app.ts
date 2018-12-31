@@ -34,8 +34,6 @@ export class App {
 			try {
 				var user = await this.users.findOrCreateByServiceId(service, profile.id);
 
-				console.log('Logged in as ' + user.id);
-
 				user.services = {
 					[service]: profile
 				}
@@ -100,12 +98,10 @@ export class App {
 		}));
 		
 		passport.serializeUser((user: User, done: (err, id) => void) => {
-			console.log('Serializing user ' + user.id);
 			done(null, user.id);
 		});
 		
 		passport.deserializeUser(async (id: string, done: (err, user) => void) => {
-			console.log('Deserializing from user ID ' + id)
 			var user = await this.users.findByUserId(id);
 			done(null, user);
 		});
@@ -185,18 +181,16 @@ export class App {
 			res.redirect('/');
 		});
 		
-		this.app.get('/dist/bundle.js', (req, res) => {
-			if(isProduction) {
-				res.sendFile(__dirname + '/../../web/public/dist/bundle.js');
-			} else {
-				res.redirect('http://localhost:16835/dist/bundle.js');
-			}
+		this.app.get('/js/bundle.js', (req, res) => {
+			res.redirect('http://localhost:16835/js/bundle.js');
 		});
 		
 		this.app.get('*', (req, res) => {
-			console.log(req.isAuthenticated());
-			console.log(req.user);
-			res.sendFile(path.resolve('src/views/index.html'));
+			if(isProduction) {
+				res.sendFile(path.resolve('web/public/app.html'));
+			} else {
+				res.sendFile(path.resolve('src/views/dev.html'));
+			}
 		});
 	}
 }
