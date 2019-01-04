@@ -1,4 +1,5 @@
 import * as bodyParser from 'body-parser';
+import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as passport from 'passport';
@@ -58,6 +59,10 @@ export class App {
 	}
 
 	setupApp() {
+		if(isProduction) {
+			this.app.use(compression());
+		}
+
 		this.app.use(bodyParser.urlencoded({
 			extended: true
 		}));
