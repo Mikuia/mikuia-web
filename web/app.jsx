@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {faSpinner} from '@fortawesome/free-solid-svg-icons';
-import {faDiscord, faTwitch} from '@fortawesome/free-brands-svg-icons';
+import {library, dom} from '@fortawesome/fontawesome-svg-core';
+import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner';
+import {faDiscord} from '@fortawesome/free-brands-svg-icons/faDiscord';
+import {faTwitch} from '@fortawesome/free-brands-svg-icons/faTwitch';
 
 import DefaultLayout from './layouts/DefaultLayout';
 
@@ -15,12 +16,12 @@ import './styles/external/noty-mikuia.scss';
 
 import './styles/app.scss';
 
-library.add(faDiscord);
-library.add(faTwitch);
-library.add(faSpinner);
+library.add(faDiscord, faTwitch, faSpinner);
 
 ReactDOM.render(
     <BrowserRouter>
         <DefaultLayout />
     </BrowserRouter>
 , document.getElementById('app'));
+
+dom.watch();
