@@ -3,95 +3,25 @@ import React from 'react';
 import {hot} from 'react-hot-loader';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Alert, Button, Col, Container, Row} from 'reactstrap';
-import {components} from 'react-select';
-import Select from 'react-select';
+import {Button, Col, Container, Row} from 'reactstrap';
 
 import AuthContext from '../components/AuthContext';
-import Common from '../common';
-
-const Option = (props) => {
-	return (
-		<components.Option {...props}>
-			<FontAwesomeIcon className="mr-2" icon={['fab', props.data.value.service]} />
-			{props.data.label}
-		</components.Option>
-	);
-}
-
-const SingleValue = (props) => {
-	return (
-		<components.SingleValue {...props}>
-			<FontAwesomeIcon className="mr-2" icon={['fab', props.data.value.service]} />
-			{props.data.label}
-		</components.SingleValue>
-	);
-}
+import TargetSelector from '../components/settings/TargetSelector';
 
 class SettingsPage extends React.Component {
 	constructor() {
 		super();
 
 		this.state = {
-			profiles: {},
 			selected: {
 				service: false,
 				serviceId: false
 			},
-			status: false,
-			targets: []
+			status: false
 		}
 		
 		this.handleTargetSelection = this.handleTargetSelection.bind(this);
 		this.toggleStatus = this.toggleStatus.bind(this);
-
-		this.getTargets();
-	}
-
-	getSelectorValues() {
-		var selections = [];
-		for(var target of this.state.targets) {
-			var label = target.serviceId;
-
-			if(this.state.profiles[target.service] && this.state.profiles[target.service][target.serviceId]) {
-				label = this.state.profiles[target.service][target.serviceId].displayName;
-			}
-
-			selections.push({
-				value: {
-					service: target.service,
-					serviceId: target.serviceId
-				},
-				label: label
-			});
-		}
-		return selections;
-	}
-
-	getTargets() {
-		axios.get('/api/auth/targets').then((response) => {
-			this.setState({
-				targets: response.data.targets
-			}, () => {
-				for(var target of this.state.targets) {
-					this.getTargetProfile(target.service, target.serviceId);
-				}
-			});
-		});
-	}
-
-	getTargetProfile(service, serviceId) {
-		axios.get('/api/profile/' + service + '/' + serviceId).then((response) => {
-			this.setState({
-				profiles: {
-					...this.state.profiles,
-					[service]: {
-						...this.state.profiles[service],
-						[serviceId]: response.data.profile
-					}
-				}
-			});
-		});
 	}
 
 	toggleStatus() {
@@ -101,7 +31,7 @@ class SettingsPage extends React.Component {
 		}, () => {
 			axios.post('/api/target/' + this.state.selected.service + '/' + this.state.selected.serviceId + '/toggle', {
 				enable: !enabled
-			}).then((response) => {
+			}).then(() => {
 				this.updateStatus();
 			});
 		});
@@ -130,7 +60,7 @@ class SettingsPage extends React.Component {
 					<Col md="3">
 						<small>Target</small>
 						<br />
-						<Select styles={Common.darkReactSelect} components={{Option: Option, SingleValue: SingleValue}} options={this.getSelectorValues()} onChange={this.handleTargetSelection} />
+						<TargetSelector onChange={this.handleTargetSelection} />
 					</Col>
 					<Col md="9">
 						<small>Status</small>
