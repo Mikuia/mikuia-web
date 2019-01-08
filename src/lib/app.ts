@@ -28,6 +28,19 @@ export class App {
 		this.setupRoutes();
 	}
 
+	async checkTargetAuth(user, targetService, targetServiceId) {
+		if(!user) return false;
+
+		var services = await this.users.getServicesByUserId(user.id);
+		for(var service of Object.keys(services)) {
+			var serviceId = services[service];
+
+			if(service == targetService && serviceId == targetServiceId) return true;
+		}
+
+		return false;
+	}
+
 	async handleAuth(service, req, profile, done) {
 		await this.users.saveServiceProfile(service, profile.id, profile);
 
@@ -149,6 +162,84 @@ export class App {
 			});
 		});
 
+		this.app.get('/api/auth/targets', async (req, res) => {
+			if(!req.isAuthenticated()) res.json([]);
+
+			var services = await this.users.getServicesByUserId(req.user.id);
+			var targets = [] as any;
+
+			for(var service of Object.keys(services)) {
+				var serviceId = services[service];
+
+				console.log(service + ': ' + serviceId);
+
+				if(service == 'twitch') {
+					targets.push({
+						service: 'twitch',
+						serviceId: serviceId
+					});
+				}
+			}
+
+			res.json({
+				targets: targets
+			});
+		});
+
+		this.app.get('/api/profile/:service/:serviceId', async (req, res) => {
+			var profile = await this.users.getServiceProfile(req.params.service, req.params.serviceId) as any;
+			var result = {} as any;
+
+			if(profile) {
+				switch(req.params.service) {
+					case 'discord':
+						result.avatar = 'https://cdn.discordapp.com/avatars/' + profile.id + '/' + profile.avatar + '.png'
+						result.displayName = profile.username + '#' + profile.discriminator;
+						result.id = profile.id;
+						result.username = profile.username + '#' + profile.discriminator;
+						break;
+					case 'twitch':
+						result.avatar = profile.profile_image_url;
+						result.displayName = profile.display_name;
+						result.id = profile.id;
+						result.username = profile.login;
+						break;
+				}
+			}
+
+			res.json({
+				profile: result
+			});
+		});
+
+		this.app.post('/api/target/:service/:serviceId/toggle', async (req, res) => {
+			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
+			if(!targetAuth) return res.sendStatus(403);
+
+			if(req.body.enable == undefined) return res.sendStatus(400);
+
+			if(req.body.enable) {
+				await this.db.saddAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+			} else {
+				await this.db.sremAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+			}
+
+			res.sendStatus(200);
+		});
+
+		this.app.get('/api/target/:service/:serviceId/status', async (req, res) => {
+			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
+			if(!targetAuth) return res.sendStatus(403);
+
+			var enabled = await this.db.sismemberAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+
+			res.json({
+				status: {
+					enabled: enabled ? true : false
+				}
+			});
+		});
+
 		this.app.get('/api/*', (req, res) => {
 			res.json({});
 		});
@@ -157,14 +248,14 @@ export class App {
 		this.app.get('/auth/discord/callback', passport.authenticate('discord', {
 			failureRedirect: '/'
 		}), (req, res) => {
-			res.redirect('/settings');
+			res.redirect('/account');
 		});
 
 		this.app.get('/auth/twitch', passport.authenticate('twitch.js'));
 		this.app.get('/auth/twitch/callback', passport.authenticate('twitch.js', {
 			failureRedirect: '/'
 		}), (req, res) => {
-			res.redirect('/settings');
+			res.redirect('/account');
 		});
 
 		this.app.get('/connect/discord', passport.authorize('discord'));

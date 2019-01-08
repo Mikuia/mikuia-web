@@ -9,6 +9,7 @@ import {LinkContainer} from 'react-router-bootstrap';
 
 import AuthContext from '../components/AuthContext';
 
+import AccountPage from '../pages/AccountPage';
 import IndexPage from '../pages/IndexPage';
 import SettingsPage from '../pages/SettingsPage';
 
@@ -114,6 +115,11 @@ class DefaultLayout extends React.Component {
 								</LinkContainer>
 							</NavItem>
 							<NavItem>
+								<LinkContainer to="/account">
+									<NavLink>Account</NavLink>
+								</LinkContainer>
+							</NavItem>
+							<NavItem>
 								<LinkContainer to="/settings">
 									<NavLink>Settings</NavLink>
 								</LinkContainer>
@@ -130,6 +136,11 @@ class DefaultLayout extends React.Component {
 											<LinkContainer to="/settings">
 												<DropdownItem>
 													Settings
+												</DropdownItem>
+											</LinkContainer>
+											<LinkContainer to="/account">
+												<DropdownItem>
+													Account
 												</DropdownItem>
 											</LinkContainer>
 											<DropdownItem divider />
@@ -165,7 +176,8 @@ class DefaultLayout extends React.Component {
 					</When>
 					<Otherwise>
 						<Route exact path="/" component={IndexPage} />
-           				<PrivateRoute path="/settings" auth={this.state.auth} component={SettingsPage} />
+						<PrivateRoute path="/account" auth={this.state.auth} component={AccountPage} />
+						<PrivateRoute path="/settings" auth={this.state.auth} component={SettingsPage} />
 					</Otherwise>
 				</Choose>
 

@@ -1,21 +1,23 @@
 @import url(https://fonts.googleapis.com/css?family=Hind:300,400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
 
 @import '_global.scss';
+@import '_custom.scss';
+
 @import 'buttons.scss';
+
+@import 'account.scss';
 @import 'settings.scss';
 
 html, body {
-    background-color: $color-bg;
-    color: white;
     font-family: 'Hind';
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 300;
 }
 
 .align-center {
     text-align: center;
-}
-
-.bg-mikuia {
-    // background-color: #121314;
 }
 
 .color-error {
@@ -23,9 +25,6 @@ html, body {
 }
 
 .error {
-    // border-left: 1px solid red;
-    // border-image: linear-gradient(#ff5252, rgba(0, 0, 0, 0));
-    // border-image-slice: 1;
     border-left: 3px solid $color-error;
     margin-top: 20px;
 }
@@ -42,7 +41,5 @@ html, body {
 }
 
 .navbar-dark .navbar-nav .nav-link.active {
-    // border-bottom: 2px solid $color-brand;
-    // color: lighten($color-brand, 30%);
     text-shadow: 0px 0px 5px lighten($color-brand, 30%);
 }

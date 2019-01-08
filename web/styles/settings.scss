@@ -1,19 +1,4 @@
-@import 'mixins/settings/connections/service.scss';
-
-.SettingsPage-Connections-Service {
-	@include settings-connections-service(white);
-	padding: 15px;
-}
-
-.SettingsPage-Connections-Service-discord {
-	@include settings-connections-service($color-service-discord);
-}
-
-.SettingsPage-Connections-Service-twitch {
-    @include settings-connections-service($color-service-twitch);
-}
-
-.SettingsPage-Connections-Service h4 {
-	font-size: 20px;
-	font-weight: 300;
+.SettingsPage-TargetSelector-Target {
+	line-height: 1.1em;
+	text-align: left;
 }

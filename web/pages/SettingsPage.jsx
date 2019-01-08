@@ -3,13 +3,29 @@ import React from 'react';
 import {hot} from 'react-hot-loader';
 
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {Button, Col, Container, Media, Row} from 'reactstrap';
+import {Alert, Button, Col, Container, Row} from 'reactstrap';
+import {components} from 'react-select';
+import Select from 'react-select';
 
 import AuthContext from '../components/AuthContext';
+import Common from '../common';
 
-const SERVICE_NAMES = {
-	discord: 'Discord',
-	twitch: 'Twitch'
+const Option = (props) => {
+	return (
+		<components.Option {...props}>
+			<FontAwesomeIcon className="mr-2" icon={['fab', props.data.value.service]} />
+			{props.data.label}
+		</components.Option>
+	);
+}
+
+const SingleValue = (props) => {
+	return (
+		<components.SingleValue {...props}>
+			<FontAwesomeIcon className="mr-2" icon={['fab', props.data.value.service]} />
+			{props.data.label}
+		</components.SingleValue>
+	);
 }
 
 class SettingsPage extends React.Component {
@@ -18,165 +34,140 @@ class SettingsPage extends React.Component {
 
 		this.state = {
 			profiles: {},
-			services: false
+			selected: {
+				service: false,
+				serviceId: false
+			},
+			status: false,
+			targets: []
 		}
+		
+		this.handleTargetSelection = this.handleTargetSelection.bind(this);
+		this.toggleStatus = this.toggleStatus.bind(this);
 
-		this.getServices();
-
-		this.unlinkService = this.unlinkService.bind(this);
+		this.getTargets();
 	}
 
-	getProfile(service) {
-		axios.get('/api/auth/profile/' + service).then((response) => {
+	getSelectorValues() {
+		var selections = [];
+		for(var target of this.state.targets) {
+			var label = target.serviceId;
+
+			if(this.state.profiles[target.service] && this.state.profiles[target.service][target.serviceId]) {
+				label = this.state.profiles[target.service][target.serviceId].displayName;
+			}
+
+			selections.push({
+				value: {
+					service: target.service,
+					serviceId: target.serviceId
+				},
+				label: label
+			});
+		}
+		return selections;
+	}
+
+	getTargets() {
+		axios.get('/api/auth/targets').then((response) => {
+			this.setState({
+				targets: response.data.targets
+			}, () => {
+				for(var target of this.state.targets) {
+					this.getTargetProfile(target.service, target.serviceId);
+				}
+			});
+		});
+	}
+
+	getTargetProfile(service, serviceId) {
+		axios.get('/api/profile/' + service + '/' + serviceId).then((response) => {
 			this.setState({
 				profiles: {
 					...this.state.profiles,
-					[service]: response.data.service
+					[service]: {
+						...this.state.profiles[service],
+						[serviceId]: response.data.profile
+					}
 				}
 			});
 		});
 	}
 
-	getServices() {
-		axios.get('/api/auth/services').then((response) => {
+	toggleStatus() {
+		var enabled = this.state.status.enabled;
+		this.setState({
+			status: false
+		}, () => {
+			axios.post('/api/target/' + this.state.selected.service + '/' + this.state.selected.serviceId + '/toggle', {
+				enable: !enabled
+			}).then((response) => {
+				this.updateStatus();
+			});
+		});
+	}
+
+	handleTargetSelection(selection) {
+		this.setState({
+			selected: selection.value
+		}, () => {
+			this.updateStatus();
+		});
+	}
+
+	updateStatus() {
+		axios.get('/api/target/' + this.state.selected.service + '/' + this.state.selected.serviceId + '/status').then((response) => {
 			this.setState({
-				services: response.data.services
-			}, () => {
-				for(let service of Object.keys(this.state.services)) {
-					this.getProfile(service);
-				}
+				status: response.data.status
 			});
 		});
 	}
 
-    render() {
+	render() {
         return (
             <Container>
 				<Row>
-					<Col md="6" sm="12">
+					<Col md="3">
+						<small>Target</small>
+						<br />
+						<Select styles={Common.darkReactSelect} components={{Option: Option, SingleValue: SingleValue}} options={this.getSelectorValues()} onChange={this.handleTargetSelection} />
+					</Col>
+					<Col md="9">
+						<small>Status</small>
+						<br />
 						<Choose>
-							<When condition={this.props.auth.user}>
-								<h1>Settings</h1>
-								<br />
-								
-								<h4>Account</h4>
-								User ID: <b>{this.props.auth.user.id}</b>
-
-								<br /><br />
-
-								<h4>Connections</h4>
-								<Choose>
-									<When condition={this.state.services === false}>
-										<FontAwesomeIcon className="mr-2" icon={['fas', 'spinner']} spin={true} />
-										Loading services...
-									</When>
-									<Otherwise>
-										<For each="service" of={Object.keys(this.state.services)}>
-											<With serviceId={this.state.services[service]}>
-												<Choose>
-													<When condition={this.state.profiles[service] == undefined}>
-														<Media key={service}>
-															<Media left>
-																<Media object src="https://placekitten.com/64/64" />
-															</Media>
-															<Media body className="ml-2">
-																<Media heading className="mb-0">
-																	<FontAwesomeIcon className="mr-2" icon={['fab', service]} />
-																	{SERVICE_NAMES[service]}
-																</Media>
-																<FontAwesomeIcon className="mr-2" icon={['fas', 'spinner']} spin={true} />
-																Loading details...
-															</Media>
-														</Media>
-													</When>
-													<Otherwise>
-														{this.renderService(service)}
-													</Otherwise>
-												</Choose>
-											</With>
-											<br />
-										</For>
-
-										<If condition={this.state.services.twitch == undefined}>
-											<a href="/connect/twitch">
-												<Button color="service-twitch">
-													<FontAwesomeIcon className="mr-2" icon={['fab', 'twitch']} />
-													Connect with Twitch
-												</Button>
-											</a>
-										</If>
-
-										<If condition={this.state.services.discord == undefined}>
-											<a href="/connect/discord">
-												<Button color="service-discord">
-													<FontAwesomeIcon className="mr-2" icon={['fab', 'discord']} />
-													Connect with Discord
-												</Button>
-											</a>
-										</If>
-
-									</Otherwise>
-								</Choose>
+							<When condition={!this.state.selected.service}>
+								Select your platform (target (whatever)), herpa derp.
 							</When>
 							<Otherwise>
-								You are not logged in.
+								<Choose>
+									<When condition={!this.state.status}>
+										{/* <div className="align-center"> */}
+											<FontAwesomeIcon icon={['fas', 'spinner']} spin={true} />
+										{/* </div> */}
+									</When>
+									<Otherwise>
+										<With enabled={this.state.status.enabled}>
+											<span className={enabled ? 'text-success' : 'text-danger'}>
+												<h4 className="mb-0 mt-3">
+													<FontAwesomeIcon className="mr-2" icon={['far', enabled ? 'check-circle' : 'times-circle']} />
+													{enabled ? 'Enabled' : 'Disabled'}
+												</h4>
+												<p>
+													{enabled ? 'Mikuia will join your channel, and will respond to messages.' : 'Mikuia will not join your channel, and won\'t respond to messages.'}
+												</p>
+											</span>
+
+											<Button color={enabled ? 'danger' : 'success'} outline={enabled} size="sm" onClick={this.toggleStatus}>{enabled ? 'Disable' : 'Enable'}</Button>
+										</With>
+									</Otherwise>
+								</Choose>
 							</Otherwise>
-						</Choose>						
+						</Choose>	
 					</Col>
 				</Row>
 			</Container>
         )
-	}
-	
-	renderServiceDetails(data) {
-		return (
-			<Media className={"SettingsPage-Connections-Service SettingsPage-Connections-Service-" + data.service} key={data.service}>
-				<Media left>
-					<Media object src={data.avatar} height="64" width="64" />
-				</Media>
-				<Media body className="ml-2">
-					<Media heading className="mb-0">
-						<FontAwesomeIcon className="mr-2" icon={['fab', data.service]} />
-						{data.name}
-					</Media>
-					<Button color={"service-" + data.service} size="sm" onClick={() => this.unlinkService(data.service)}>Unlink</Button>
-				</Media>
-			</Media>
-		)
-	}
-
-	renderService(service) {
-		switch(service) {
-			case 'discord':
-				return this.renderServiceDetails({
-					service: service,
-					name: this.state.profiles.discord.username + '#' + this.state.profiles.discord.discriminator,
-					avatar: 'https://cdn.discordapp.com/avatars/' + this.state.profiles.discord.id + '/' + this.state.profiles.discord.avatar + '.png'				});
-			case 'twitch':
-				return this.renderServiceDetails({
-					service: service,
-					name: this.state.profiles.twitch.display_name,
-					avatar: this.state.profiles.twitch.profile_image_url
-				});
-		}
-	}
-
-	unlinkService(service) {
-		if(Object.keys(this.state.services).length < 2) {
-			import(/* webpackChunkName: 'npm.noty' */ 'noty').then(({default: Noty}) => {
-				new Noty({
-					layout: 'topCenter',
-					theme: 'mikuia',
-					timeout: 3000,
-					type: 'error',
-					text: 'Cannot unlink your only connection.'
-				}).show();
-			})
-		} else {
-			axios.post('/disconnect/' + service).then((response) => {
-				this.getServices();
-			});
-		}
 	}
 }
 

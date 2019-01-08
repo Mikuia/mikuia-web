@@ -1,0 +1,29 @@
+$body-bg: $color-bg;
+$body-color: white;
+
+$alert-bg-level: 7;
+$alert-border-level: 7;
+$alert-color-level: -10;
+
+$dropdown-bg: $gray-900;
+
+$dropdown-divider-bg: $gray-700;
+
+$dropdown-link-color: $gray-400;
+
+$dropdown-link-hover-bg: $gray-800;
+$dropdown-link-hover-color: white;
+
+$dropdown-link-active-bg: $gray-700;
+
+$enable-transitions: true;
+
+$theme-colors: (
+	"primary": $color-brand
+);
+
+@import 'bootstrap/scss/bootstrap.scss';
+
+.dropdown-item:focus {
+	outline: 0;
+}

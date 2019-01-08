@@ -8,5 +8,6 @@ export interface PromisifiedRedisClient extends RedisClient {
 	hmsetAsync(...args: any[]): Promise<any>;
 	hsetAsync(...args: any[]): Promise<any>;
 	saddAsync(...args: any[]): Promise<any>;
+	sismemberAsync(...args: any[]): Promise<any>;
 	sremAsync(...args: any[]): Promise<any>;
 }
