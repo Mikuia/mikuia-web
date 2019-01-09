@@ -127,13 +127,13 @@ export class App {
 
 	setupRoutes() {
 		this.app.get('/api/auth', (req, res) => {
-			res.json({
+			res.status(200).json({
 				user: req.user ? req.user : null
 			});
 		});
 
 		this.app.get('/api/auth/profile/:service', async (req, res) => {
-			if(!req.isAuthenticated()) return res.json({
+			if(!req.isAuthenticated()) return res.status(401).json({
 				service: null
 			});
 
@@ -153,7 +153,7 @@ export class App {
 		});
 
 		this.app.get('/api/auth/services', async (req, res) => {
-			if(!req.isAuthenticated()) res.json({});
+			if(!req.isAuthenticated()) res.status(401).json({});
 
 			var services = await this.users.getServicesByUserId(req.user.id);
 
@@ -163,7 +163,7 @@ export class App {
 		});
 
 		this.app.get('/api/auth/targets', async (req, res) => {
-			if(!req.isAuthenticated()) res.json([]);
+			if(!req.isAuthenticated()) res.status(401).json([]);
 
 			var services = await this.users.getServicesByUserId(req.user.id);
 			var targets = [] as any;
@@ -212,6 +212,19 @@ export class App {
 			});
 		});
 
+		this.app.get('/api/target/:service/:serviceId/status', async (req, res) => {
+			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
+			if(!targetAuth) return res.sendStatus(403);
+
+			var enabled = await this.db.sismemberAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+
+			res.json({
+				status: {
+					enabled: enabled ? true : false
+				}
+			});
+		});
+
 		this.app.post('/api/target/:service/:serviceId/toggle', async (req, res) => {
 			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
 			if(!targetAuth) return res.sendStatus(403);
@@ -225,19 +238,6 @@ export class App {
 			}
 
 			res.sendStatus(200);
-		});
-
-		this.app.get('/api/target/:service/:serviceId/status', async (req, res) => {
-			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
-			if(!targetAuth) return res.sendStatus(403);
-
-			var enabled = await this.db.sismemberAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
-
-			res.json({
-				status: {
-					enabled: enabled ? true : false
-				}
-			});
 		});
 
 		this.app.get('/api/*', (req, res) => {
