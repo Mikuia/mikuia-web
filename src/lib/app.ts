@@ -232,9 +232,9 @@ export class App {
 			if(req.body.enable == undefined) return res.sendStatus(400);
 
 			if(req.body.enable) {
-				await this.db.saddAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+				await this.db.saddAsync('service:' + req.params.service + ':targets:enabled', req.params.serviceId);
 			} else {
-				await this.db.sremAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+				await this.db.sremAsync('service:' + req.params.service + ':targets:enabled', req.params.serviceId);
 			}
 
 			res.sendStatus(200);
