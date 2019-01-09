@@ -8,20 +8,11 @@ import {Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Navbar, Navb
 import {LinkContainer} from 'react-router-bootstrap';
 
 import AuthContext from '../components/AuthContext';
+import PrivateRoute from '../components/PrivateRoute';
 
 import AccountPage from '../pages/AccountPage';
 import IndexPage from '../pages/IndexPage';
 import SettingsPage from '../pages/SettingsPage';
-
-function PrivateRoute({component: Component, auth, ...rest}) {
-	return (
-		<Route {...rest} render={props => auth.user ? (
-			<Component {...props} />
-		) : (
-			<Redirect to="/" />
-		)} />
-	)
-}
 
 class DefaultLayout extends React.Component {
 	constructor() {

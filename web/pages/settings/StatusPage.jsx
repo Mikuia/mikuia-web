@@ -24,6 +24,10 @@ class StatusPage extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+		this.updateStatus();
+	}
+
 	toggleStatus() {
 		var enabled = this.state.status.enabled;
 		this.setState({
@@ -51,34 +55,27 @@ class StatusPage extends React.Component {
 				<small>Status</small>
 				<br />
 				<Choose>
-					<When condition={!this.props.selected.service}>
-						Select your platform (target (whatever)), herpa derp.
+					<When condition={!this.state.status}>
+						{/* <div className="align-center"> */}
+							<FontAwesomeIcon icon={['fas', 'spinner']} spin={true} />
+						{/* </div> */}
 					</When>
 					<Otherwise>
-						<Choose>
-							<When condition={!this.state.status}>
-								{/* <div className="align-center"> */}
-									<FontAwesomeIcon icon={['fas', 'spinner']} spin={true} />
-								{/* </div> */}
-							</When>
-							<Otherwise>
-								<With enabled={this.state.status.enabled}>
-									<span className={enabled ? 'text-success' : 'text-danger'}>
-										<h4 className="mb-0 mt-3">
-											<FontAwesomeIcon className="mr-2" icon={['far', enabled ? 'check-circle' : 'times-circle']} />
-											{enabled ? 'Enabled' : 'Disabled'}
-										</h4>
-										<p>
-											{enabled ? 'Mikuia will join your channel, and will respond to messages.' : 'Mikuia will not join your channel, and won\'t respond to messages.'}
-										</p>
-									</span>
+						<With enabled={this.state.status.enabled}>
+							<span className={enabled ? 'text-success' : 'text-danger'}>
+								<h4 className="mb-0 mt-3">
+									<FontAwesomeIcon className="mr-2" icon={['far', enabled ? 'check-circle' : 'times-circle']} />
+									{enabled ? 'Enabled' : 'Disabled'}
+								</h4>
+								<p>
+									{enabled ? 'Mikuia will join your channel, and will respond to messages.' : 'Mikuia will not join your channel, and won\'t respond to messages.'}
+								</p>
+							</span>
 
-									<Button color={enabled ? 'danger' : 'success'} outline={enabled} size="sm" onClick={this.toggleStatus}>{enabled ? 'Disable' : 'Enable'}</Button>
-								</With>
-							</Otherwise>
-						</Choose>
+							<Button color={enabled ? 'danger' : 'success'} outline={enabled} size="sm" onClick={this.toggleStatus}>{enabled ? 'Disable' : 'Enable'}</Button>
+						</With>
 					</Otherwise>
-				</Choose>	
+				</Choose>
 			</React.Fragment>
         )
 	}
