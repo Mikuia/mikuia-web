@@ -216,7 +216,7 @@ export class App {
 			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
 			if(!targetAuth) return res.sendStatus(403);
 
-			var enabled = await this.db.sismemberAsync('service:' + req.params.service + ':channels:enabled', req.params.serviceId);
+			var enabled = await this.db.sismemberAsync('service:' + req.params.service + ':targets:enabled', req.params.serviceId);
 
 			res.json({
 				status: {
