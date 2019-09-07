@@ -1,5 +1,6 @@
 .vscode/
 node_modules/
 web/public/app.html
+web/public/dist
 web/public/js
 settings.json

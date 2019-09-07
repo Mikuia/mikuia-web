@@ -1,4 +1,0 @@
-@mixin settings-connections-service($service-color) {
-	background-color: transparentize($service-color, 0.5);
-    border: 1px solid transparentize($service-color, 0.1);
-}

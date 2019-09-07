@@ -1,17 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 import {hot} from 'react-hot-loader';
 
 import AuthContext from '../../components/AuthContext';
 
 class PluginsPage extends React.Component {
-	constructor() {
-		super();
-
-		this.state = {
-		}
-		
-	}
-
 	render() {
         return (
             <React.Fragment>

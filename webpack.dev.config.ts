@@ -8,6 +8,7 @@ export {};
 
 module.exports = merge(common, {
 	mode: 'development',
+	devtool: 'source-map',
 	devServer: {
 		contentBase: path.join(__dirname, 'web/public/'),
 		disableHostCheck: true,
@@ -22,8 +23,5 @@ module.exports = merge(common, {
 	output: {
 		publicPath: 'http://localhost:16835/',
 		filename: 'js/bundle.js'
-	},
-	plugins: [
-		new webpack.HotModuleReplacementPlugin()
-	]
+	}
 });

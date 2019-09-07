@@ -1,0 +1,100 @@
+import * as React from 'react';
+import {hot} from 'react-hot-loader';
+import {Route, withRouter, RouteComponentProps} from 'react-router-dom';
+
+import {Tab, Tabs, TabId, Callout} from '@blueprintjs/core';
+import {Box, Flex} from 'reflexbox';
+
+import IAuthProps from '../components/interfaces/IAuthProps';
+import ITarget from '../components/interfaces/ITarget';
+import ITargetSelectionEntry from '../components/interfaces/ITargetSelectionEntry';
+
+import AuthContext from '../components/AuthContext';
+import Container from '../components/Container';
+import PluginsPage from './settings/PluginsPage';
+import StatusPage from './settings/StatusPage';
+import TargetSelection from '../components/settings/TargetSelection';
+
+interface SettingsPageProps extends IAuthProps, RouteComponentProps {}
+interface SettingsPageState {
+	selected: ITargetSelectionEntry | null
+}
+
+class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState> {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			selected: null
+		}
+		
+		this.handleTabSelection = this.handleTabSelection.bind(this);
+		this.handleTargetSelection = this.handleTargetSelection.bind(this);
+	}
+
+	handleTabSelection(newTabId: TabId) {
+		var path = '/settings';
+
+		switch(newTabId) {
+			case 'plugins':
+				path = '/settings/plugins';
+				break;
+		}
+
+		this.props.history.push(path);
+	}
+
+	handleTargetSelection(selection: ITargetSelectionEntry) {
+		this.setState({
+			selected: selection
+		});
+	}
+
+	render() {
+        return (
+            <Container>
+				<Flex>
+					<Box width={1/4} px={3}>
+						<small>Target</small>
+						<TargetSelection className="SettingsPage-TargetSelection mt-1" onItemSelect={this.handleTargetSelection} selected={this.state.selected} />
+						<br />
+						{this.state.selected && (
+							<React.Fragment>
+								<small>Settings</small>
+
+								<Tabs id="SettingsPage-Tabs" vertical className="SettingsPage-Tabs mt-1" defaultSelectedTabId="status" onChange={this.handleTabSelection}>
+									<Tab id="status" className="bp3-fill" title="Status" />
+									<Tab id="plugins" className="bp3-fill">Plugins</Tab>
+								</Tabs>
+							</React.Fragment>
+						)}
+					</Box>
+					<Box width={3/4}>
+						{!this.state.selected ? (
+							<div>
+								<small>Settings</small>
+								<br />
+								<Callout className="mt-2" icon="warning-sign" intent="primary" title="Choose your platform.">
+									Select your platform from the dropdown on the left.
+								</Callout>
+							</div>
+						) : (
+							<div>
+								<Route exact path="/settings" render={(props) => <StatusPage {...props} selected={this.state.selected} />} />
+								<Route path="/settings/plugins" render={(props) => <PluginsPage {...props} selected={this.state.selected} />} />
+							</div>
+						)}
+					</Box>
+				</Flex>
+			</Container>
+        )
+	}
+}
+
+const SettingsPageAuth = props => (
+	<AuthContext.Consumer>
+		{auth => <SettingsPage {...props} auth={auth} />}
+	</AuthContext.Consumer>
+)
+
+export default hot(module)(withRouter(SettingsPageAuth));

@@ -1,9 +1,16 @@
 {
 	"compilerOptions": {
 		"allowJs": true,
+		"jsx": "react",
+		"module": "commonjs",
 		"moduleResolution": "node",
+		"sourceMap": true,
 		"strictNullChecks": true,
-		"target": "es2017"
+		"target": "es6"
 	},
-	"compileOnSave": true
+	"compileOnSave": true,
+	"exclude": [
+		"node_modules",
+		"./src/**/*"
+	]
 }

@@ -1,20 +1,15 @@
-import React from 'react';
+import * as React from 'react';
 import {hot} from 'react-hot-loader';
 
-import {Col, Container, Row} from 'reactstrap';
-
 import AuthContext from '../components/AuthContext';
+import Container from '../components/Container';
 
 class IndexPage extends React.Component {
     render() {
         return (
             <Container>
-				<Row>
-					<Col md="12">
-						<h1>Headline</h1>
-						Something interesting.
-					</Col>
-				</Row>
+				<h1>Headline</h1>
+				Something interesting.
 			</Container>
         )
     }

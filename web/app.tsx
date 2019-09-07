@@ -1,6 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
+import {FocusStyleManager} from '@blueprintjs/core';
 import {BrowserRouter} from 'react-router-dom';
 
 import {library, dom} from '@fortawesome/fontawesome-svg-core';
@@ -10,16 +11,11 @@ import {faCheckCircle} from '@fortawesome/free-regular-svg-icons/faCheckCircle';
 import {faTimesCircle} from '@fortawesome/free-regular-svg-icons/faTimesCircle';
 import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner';
 
-
 import DefaultLayout from './layouts/DefaultLayout';
-
-// import 'bootstrap/dist/css/bootstrap.min.css';
-
-import 'noty/src/noty.scss';
-import './styles/external/noty-mikuia.scss';
 
 import './styles/app.scss';
 
+FocusStyleManager.onlyShowFocusOnTabs();
 library.add(faDiscord, faTwitch, faSpinner, faCheckCircle, faTimesCircle);
 
 ReactDOM.render(

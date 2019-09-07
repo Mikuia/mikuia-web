@@ -1,27 +1,23 @@
-$body-bg: $color-bg;
-$body-color: white;
+@import '~@blueprintjs/core/src/common/_colors';
 
-$alert-bg-level: 7;
-$alert-border-level: 7;
-$alert-color-level: -10;
+$pt-intent-primary: $color-brand;
 
-$dropdown-bg: $gray-900;
-$dropdown-divider-bg: $gray-700;
-$dropdown-link-color: $gray-400;
-$dropdown-link-hover-bg: $gray-800;
-$dropdown-link-hover-color: white;
-$dropdown-link-active-bg: $gray-700;
+$pt-link-color: $color-brand;
+$pt-dark-link-color: $color-brand-light;
 
-$enable-transitions: true;
-
-$link-color: $gray-300;
-
-$theme-colors: (
-	"primary": $color-brand
+$pt-intent-text-colors: (
+	'primary': $color-brand,
+	'success': $green2,
+	'warning': $orange2,
+	'danger': $red2
 );
 
-@import 'bootstrap/scss/bootstrap.scss';
+$pt-dark-intent-text-colors: (
+	'primary': $color-brand-light,
+	'success': $green5,
+	'warning': $orange5,
+	'danger': $red5
+);
 
-.dropdown-item:focus {
-	outline: 0;
-}
+@import '~normalize.css';
+@import '~@blueprintjs/core/src/blueprint';
