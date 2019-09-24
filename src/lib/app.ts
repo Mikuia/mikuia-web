@@ -212,6 +212,16 @@ export class App {
 			});
 		});
 
+		this.app.get('/api/target/:service/:serviceId/commands', async (req, res) => {
+			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
+			if(!targetAuth) return res.sendStatus(403);
+
+			var commands = await this.commands.getAll(req.params.service, req.params.serviceId);
+			res.json({
+				commands: commands
+			});
+		});
+
 		this.app.post('/api/target/:service/:serviceId/commands', async (req, res) => {
 			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
 			if(!targetAuth) return res.sendStatus(403);

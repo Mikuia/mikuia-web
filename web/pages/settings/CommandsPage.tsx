@@ -3,7 +3,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {RouteComponentProps} from 'react-router';
 
-import {Button, Dialog, Classes, FormGroup, InputGroup} from '@blueprintjs/core';
+import {Button, Dialog, Classes, FormGroup, InputGroup, HTMLTable} from '@blueprintjs/core';
 
 import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
@@ -13,7 +13,9 @@ interface CommandsPageProps extends IAuthProps, RouteComponentProps {
 	selected: ITargetSelectionEntry
 }
 interface CommandsPageState {
-	command: {
+	commands: object,
+	loading: boolean,
+	newCommand: {
 		alias: string,
 		handler: string
 	},
@@ -26,7 +28,9 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		super(props);
 
 		this.state = {
-			command: {
+			commands: {},
+			loading: false,
+			newCommand: {
 				alias: '',
 				handler: '',
 			},
@@ -38,12 +42,23 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		this.handleNewCommandDialogClose = this.handleNewCommandDialogClose.bind(this);
 		this.handleNewCommandDialogOpen = this.handleNewCommandDialogOpen.bind(this);
 		this.handleNewCommandDialogSubmit = this.handleNewCommandDialogSubmit.bind(this);
+
+		this.getCommands();
+	}
+
+	getCommands() {
+		axios.get('/api/target/' + this.props.selected.target.service + '/' + this.props.selected.target.serviceId + '/commands').then((response) => {
+			this.setState({
+				commands: response.data.commands,
+				loading: false,
+			});
+		});
 	}
 
 	handleNewCommandDialogChange(e) {
 		this.setState({
-			command: {
-				...this.state.command,
+			newCommand: {
+				...this.state.newCommand,
 				[e.target.name]: e.target.value
 			}
 		})
@@ -66,8 +81,8 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 			newCommandSubmitPending: true
 		}, () => {
 			axios.post(`/api/target/${this.props.selected.target.service}/${this.props.selected.target.serviceId}/commands`, {
-				alias: this.state.command.alias,
-				handler: this.state.command.handler
+				alias: this.state.newCommand.alias,
+				handler: this.state.newCommand.handler
 			}).then((response) => {
 				this.handleNewCommandDialogClose();
 				this.setState({
@@ -84,6 +99,19 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				<br />
 				<Button className="mt-1" intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
 
+				<HTMLTable className="CommandsPage-Table">
+					<thead>
+						<tr>
+							<th>Aliases</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>!test</td>
+						</tr>
+					</tbody>
+				</HTMLTable>
+
 				<Dialog
 					className={Classes.DARK}
 					icon="plus"
@@ -97,14 +125,14 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 							label="Alias"
 							labelFor="alias"
 						>
-							<InputGroup id="alias" name="alias" placeholder="!command" onChange={this.handleNewCommandDialogChange} value={this.state.command.alias} />
+							<InputGroup id="alias" name="alias" placeholder="!command" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.alias} />
 						</FormGroup>
 						<FormGroup
 							helperText="That's what will happen when the command is executed."
 							label="Handler"
 							labelFor="handler"
 						>
-							<InputGroup id="handler" name="handler" placeholder="base.dummy" onChange={this.handleNewCommandDialogChange} value={this.state.command.handler} />
+							<InputGroup id="handler" name="handler" placeholder="base.dummy" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.handler} />
 						</FormGroup>
 					</div>
 					<div className={Classes.DIALOG_FOOTER}>
