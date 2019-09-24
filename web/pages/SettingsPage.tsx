@@ -6,10 +6,10 @@ import {Tab, Tabs, TabId, Callout} from '@blueprintjs/core';
 import {Box, Flex} from 'reflexbox';
 
 import IAuthProps from '../components/interfaces/IAuthProps';
-import ITarget from '../components/interfaces/ITarget';
 import ITargetSelectionEntry from '../components/interfaces/ITargetSelectionEntry';
 
 import AuthContext from '../components/AuthContext';
+import CommandsPage from './settings/CommandsPage';
 import Container from '../components/Container';
 import PluginsPage from './settings/PluginsPage';
 import StatusPage from './settings/StatusPage';
@@ -36,6 +36,9 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 		var path = '/settings';
 
 		switch(newTabId) {
+			case 'commands':
+				path = '/settings/commands';
+				break;
 			case 'plugins':
 				path = '/settings/plugins';
 				break;
@@ -64,6 +67,7 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 
 								<Tabs id="SettingsPage-Tabs" vertical className="SettingsPage-Tabs mt-1" defaultSelectedTabId="status" onChange={this.handleTabSelection}>
 									<Tab id="status" className="bp3-fill" title="Status" />
+									<Tab id="commands" className="bp3-fill">Commands</Tab>
 									<Tab id="plugins" className="bp3-fill">Plugins</Tab>
 								</Tabs>
 							</React.Fragment>
@@ -81,6 +85,7 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 						) : (
 							<div>
 								<Route exact path="/settings" render={(props) => <StatusPage {...props} selected={this.state.selected} />} />
+								<Route path="/settings/commands" render={(props) => <CommandsPage {...props} selected={this.state.selected} />} />
 								<Route path="/settings/plugins" render={(props) => <PluginsPage {...props} selected={this.state.selected} />} />
 							</div>
 						)}

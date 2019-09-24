@@ -3,9 +3,9 @@ import * as redis from 'redis';
 
 bluebird.promisifyAll(redis);
 
+import {PromisifiedRedisClient} from 'mikuia-shared';
+
 import {App} from './lib/app';
-import {Users} from './lib/users';
-import {PromisifiedRedisClient} from './lib/typings/redis';
 
 export class Web {
     private app: App;

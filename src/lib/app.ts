@@ -9,18 +9,18 @@ import * as session from 'express-session';
 import * as discordStrategy from 'passport-discord';
 import * as twitchStrategy from 'passport-twitch.js';
 
-import {PromisifiedRedisClient} from './typings/redis';
-import {User} from './user';
-import {Users} from './users';
+import {Commands, PromisifiedRedisClient, User, Users} from 'mikuia-shared';
 
 const isProduction = process.env.NODE_ENV == 'production';
 
 export class App {
 	private app: express.Application;
+	private commands: Commands;
 	private users: Users;
 
 	constructor(private db: PromisifiedRedisClient, private settings) {
 		this.app = express();
+		this.commands = new Commands(this.db);
 		this.users = new Users(this.db);
 
 		this.setupApp();
@@ -137,7 +137,7 @@ export class App {
 				service: null
 			});
 
-			var services = await this.users.getServicesByUserId(req.user.id);
+			var services = await this.users.getServicesByUserId(req.user!.id);
 
 			if(services[req.params.service] == undefined) return res.json({
 				service: null
@@ -155,7 +155,7 @@ export class App {
 		this.app.get('/api/auth/services', async (req, res) => {
 			if(!req.isAuthenticated()) res.status(401).json({});
 
-			var services = await this.users.getServicesByUserId(req.user.id);
+			var services = await this.users.getServicesByUserId(req.user!.id);
 
 			res.json({
 				services: services
@@ -165,7 +165,7 @@ export class App {
 		this.app.get('/api/auth/targets', async (req, res) => {
 			if(!req.isAuthenticated()) res.status(401).json([]);
 
-			var services = await this.users.getServicesByUserId(req.user.id);
+			var services = await this.users.getServicesByUserId(req.user!.id);
 			var targets = [] as any;
 
 			for(var service of Object.keys(services)) {
@@ -209,6 +209,18 @@ export class App {
 
 			res.json({
 				profile: result
+			});
+		});
+
+		this.app.post('/api/target/:service/:serviceId/commands', async (req, res) => {
+			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
+			if(!targetAuth) return res.sendStatus(403);
+
+			var command = await this.commands.create(req.params.service, req.params.serviceId, req.body.handler);
+			await this.commands.addAlias(req.params.service, req.params.serviceId, req.body.alias, command.id);
+
+			res.json({
+				id: command.id
 			});
 		});
 
@@ -264,9 +276,9 @@ export class App {
 		this.app.post('/disconnect/:service', async (req, res) => {
 			if(!req.isAuthenticated()) res.sendStatus(403);
 
-			var services = await this.users.getServicesByUserId(req.user.id);
+			var services = await this.users.getServicesByUserId(req.user!.id);
 			if(Object.keys(services).length > 1) {
-				await this.users.unlinkServiceByUserId(req.user.id, req.params.service);
+				await this.users.unlinkServiceByUserId(req.user!.id, req.params.service);
 			}
 
 			res.sendStatus(200);

@@ -74,7 +74,7 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
 						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={"Mikuia is " + (this.state.status.enabled ? 'enabled' : 'disabled') + '.'}>
 							{this.state.status.enabled ? 'Mikuia will join your channel, and will respond to messages.' : 'Mikuia will not join your channel, and won\'t respond to messages.'}
 						</Callout>
-						<Button className="mt-2" intent={this.state.status.enabled ? 'danger' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? 'Disable' : 'Enable'}</Button>
+						<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? 'Disable' : 'Enable'}</Button>
 					</div>
 				)}
 				</React.Fragment>
