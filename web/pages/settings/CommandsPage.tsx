@@ -3,7 +3,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {RouteComponentProps} from 'react-router';
 
-import {Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup, HTMLTable, Navbar} from '@blueprintjs/core';
+import {Alert, Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup, Intent, HTMLTable, Navbar, Spinner} from '@blueprintjs/core';
 
 import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
@@ -25,7 +25,9 @@ interface CommandsPageState {
 		handler: string
 	},
 	newCommandDialogOpen: boolean,
-	newCommandSubmitPending: boolean
+	newCommandSubmitPending: boolean,
+	removeCommandAlertId: string,
+	removeCommandAlertOpen: boolean
 }
 
 class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState> {
@@ -39,13 +41,15 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				aliases: {},
 				commands: {}
 			},
-			loading: false,
+			loading: true,
 			newCommand: {
 				alias: '',
 				handler: '',
 			},
 			newCommandDialogOpen: false,
-			newCommandSubmitPending: false
+			newCommandSubmitPending: false,
+			removeCommandAlertId: '',
+			removeCommandAlertOpen: false
 		}
 
 		this.handleCommandDrawerClose = this.handleCommandDrawerClose.bind(this);
@@ -54,6 +58,9 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		this.handleNewCommandDialogClose = this.handleNewCommandDialogClose.bind(this);
 		this.handleNewCommandDialogOpen = this.handleNewCommandDialogOpen.bind(this);
 		this.handleNewCommandDialogSubmit = this.handleNewCommandDialogSubmit.bind(this);
+		this.handleRemoveCommandAlertClose = this.handleRemoveCommandAlertClose.bind(this);
+		this.handleRemoveCommandAlertOpen = this.handleRemoveCommandAlertOpen.bind(this);
+		this.handleRemoveCommandAlertSubmit = this.handleRemoveCommandAlertSubmit.bind(this);
 
 		this.getCommands();
 	}
@@ -119,6 +126,27 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		});
 	}
 
+	handleRemoveCommandAlertClose() {
+		this.setState({
+			removeCommandAlertId: '',
+			removeCommandAlertOpen: false
+		})
+	}
+
+	handleRemoveCommandAlertOpen(commandId) {
+		this.setState({
+			removeCommandAlertId: commandId,
+			removeCommandAlertOpen: true
+		});
+	}
+
+	handleRemoveCommandAlertSubmit() {
+		axios.delete(`/api/target/${this.props.selected.target.service}/${this.props.selected.target.serviceId}/command/${this.state.removeCommandAlertId}`).then((response) => {
+			this.handleRemoveCommandAlertClose();
+			this.getCommands();
+		});
+	}
+
 	render() {
         return (
             <React.Fragment>
@@ -133,27 +161,31 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 						<tr>
 							<th>Alias</th>
 							<th>Command</th>
-							<th>Handler</th>
-							<th>Actions</th>
+							<th style={{width: '20%'}}>Handler</th>
+							<th style={{width: '20%'}}>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						{Object.keys(this.state.data.aliases).map((alias) => {
+						{!this.state.loading && Object.keys(this.state.data.aliases).map((alias) => {
 							var commandId = this.state.data.aliases[alias];
 
 							return (
-								<tr>
-									<td>{alias}</td>
-									<td>{commandId}</td>
-									<td>{this.state.data.commands[commandId].handler}</td>
+								<tr key={commandId}>
+									<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{alias}</td>
+									<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{commandId}</td>
+									<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{this.state.data.commands[commandId].handler}</td>
 									<td>
 										<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>Edit</Button>
+										{' '}
+										<Button onClick={() => this.handleRemoveCommandAlertOpen(commandId)} intent="danger">Remove</Button>
 									</td>
 								</tr>
 							);
 						})}
 					</tbody>
 				</HTMLTable>
+
+				{this.state.loading && <Spinner size={Spinner.SIZE_SMALL} />}
 
 				<Drawer
 					className={Classes.DARK}
@@ -171,7 +203,6 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 						</div>
 					</div>
 				</Drawer>
-
 
 				<Dialog
 					className={Classes.DARK}
@@ -203,6 +234,21 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 						</div>
 					</div>
 				</Dialog>
+
+				<Alert
+					className={Classes.DARK}
+					cancelButtonText="No, keep it."
+					confirmButtonText="Yes, remove it."
+					icon="trash"
+					intent={Intent.DANGER}
+					isOpen={this.state.removeCommandAlertOpen}
+					onCancel={this.handleRemoveCommandAlertClose}
+					onConfirm={this.handleRemoveCommandAlertSubmit}
+				>
+					<p>
+						Are you sure you want to remove command <b>{this.state.removeCommandAlertId}</b> and all its settings?
+					</p>
+				</Alert>
 
 			</React.Fragment>
         )
