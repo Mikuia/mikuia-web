@@ -1,13 +1,9 @@
 
 @import '_global.scss';
 @import '_custom.scss';
+@import '_tools.scss';
 
 @import 'settings.scss';
-
-.bp3-menu a, .bp3-navbar a {
-	color: white !important;
-	text-decoration: none !important;
-}
 
 html, body {
 	background-color: $pt-dark-app-background-color;
@@ -17,95 +13,18 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 300;
 }
 
-.align-center {
-    text-align: center;
+.bp3-menu a, .bp3-navbar a {
+	color: white !important;
+	text-decoration: none !important;
 }
 
-.bp3-dark .bp3-navbar {
+.MikuiaNavbar.bp3-navbar {
 	background-color: mix($color-brand, black, 80%);
 	border-bottom: 1px solid mix($color-brand, black, 40%);
 	box-shadow: none;
     margin-bottom: 1em;
 }
 
-.bp3-dark .bp3-navbar-heading > img {
+.MikuiaNavbar.bp3-navbar .bp3-navbar-heading > img {
 	width: 32px;
-}
-
-.color-error {
-    color: $color-error;
-}
-
-.container {
-	margin: 0 auto;
-	max-width: 1100px;
-}
-
-.error {
-    border-left: 3px solid $color-error;
-    margin-top: 20px;
-}
-
-.mb-1 {
-	margin-bottom: 0.25rem;
-}
-
-.mb-2 {
-	margin-bottom: 0.5rem;
-}
-
-.mb-3 {
-	margin-bottom: 0.75rem;
-}
-
-.mb-4 {
-	margin-bottom: 1rem;
-}
-
-.ml-1 {
-	margin-left: 0.25rem;
-}
-
-.ml-2 {
-	margin-left: 0.5rem;
-}
-
-.ml-3 {
-	margin-left: 0.75rem;
-}
-
-.ml-4 {
-	margin-left: 1rem;
-}
-
-.mr-1 {
-	margin-right: 0.25rem;
-}
-
-.mr-2 {
-	margin-right: 0.5rem;
-}
-
-.mr-3 {
-	margin-right: 0.75rem;
-}
-
-.mr-4 {
-	margin-right: 1rem;
-}
-
-.mt-1 {
-	margin-top: 0.25rem;
-}
-
-.mt-2 {
-	margin-top: 0.5rem;
-}
-
-.mt-3 {
-	margin-top: 0.75rem;
-}
-
-.mt-4 {
-	margin-top: 1rem;
 }

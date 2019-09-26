@@ -216,8 +216,10 @@ export class App {
 			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
 			if(!targetAuth) return res.sendStatus(403);
 
+			var aliases = await this.commands.getAliases(req.params.service, req.params.serviceId);
 			var commands = await this.commands.getAll(req.params.service, req.params.serviceId);
 			res.json({
+				aliases: aliases,
 				commands: commands
 			});
 		});

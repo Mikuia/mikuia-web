@@ -3,7 +3,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {RouteComponentProps} from 'react-router';
 
-import {Button, Dialog, Classes, FormGroup, InputGroup, HTMLTable} from '@blueprintjs/core';
+import {Button, Dialog, Classes, FormGroup, InputGroup, HTMLTable, Navbar, Alignment} from '@blueprintjs/core';
 
 import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
@@ -13,7 +13,10 @@ interface CommandsPageProps extends IAuthProps, RouteComponentProps {
 	selected: ITargetSelectionEntry
 }
 interface CommandsPageState {
-	commands: object,
+	data: {
+		aliases: any,
+		commands: any
+	},
 	loading: boolean,
 	newCommand: {
 		alias: string,
@@ -28,7 +31,10 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		super(props);
 
 		this.state = {
-			commands: {},
+			data: {
+				aliases: {},
+				commands: {}
+			},
 			loading: false,
 			newCommand: {
 				alias: '',
@@ -49,7 +55,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 	getCommands() {
 		axios.get('/api/target/' + this.props.selected.target.service + '/' + this.props.selected.target.serviceId + '/commands').then((response) => {
 			this.setState({
-				commands: response.data.commands,
+				data: response.data,
 				loading: false,
 			});
 		});
@@ -85,6 +91,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				handler: this.state.newCommand.handler
 			}).then((response) => {
 				this.handleNewCommandDialogClose();
+				this.getCommands();
 				this.setState({
 					newCommandSubmitPending: false
 				});
@@ -96,19 +103,33 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
         return (
             <React.Fragment>
 				<small>Commands</small>
-				<br />
-				<Button className="mt-1" intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
+				<Navbar className="mt-1">
+					<Navbar.Group align={Alignment.LEFT}>
+						<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
+					</Navbar.Group>
+				</Navbar>
 
-				<HTMLTable className="CommandsPage-Table">
+				<HTMLTable interactive striped className="CommandsPage-Table mt-2">
 					<thead>
 						<tr>
-							<th>Aliases</th>
+							<th>Alias</th>
+							<th>Command</th>
+							<th>Handler</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>!test</td>
-						</tr>
+						{Object.keys(this.state.data.aliases).map((alias) => {
+							var commandId = this.state.data.aliases[alias];
+
+							return (
+								<tr>
+									<td>{alias}</td>
+									<td>{commandId}</td>
+									<td>{this.state.data.commands[commandId].handler}</td>
+								</tr>
+							);
+						})}
 					</tbody>
 				</HTMLTable>
 

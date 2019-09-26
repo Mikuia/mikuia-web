@@ -96,7 +96,7 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 		return (
 			<AuthContext.Provider value={this.state.auth}>
 				<div className="app bp3-dark">
-					<Navbar>
+					<Navbar className="MikuiaNavbar">
 						<Container>
 							<Navbar.Group>
 								<Navbar.Heading>

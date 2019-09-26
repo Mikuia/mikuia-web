@@ -17,6 +17,7 @@ import TargetSelection from '../components/settings/TargetSelection';
 
 interface SettingsPageProps extends IAuthProps, RouteComponentProps {}
 interface SettingsPageState {
+	activeTab: TabId,
 	selected: ITargetSelectionEntry | null
 }
 
@@ -25,6 +26,7 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 		super(props);
 
 		this.state = {
+			activeTab: '',
 			selected: null
 		}
 		
@@ -53,6 +55,22 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 		});
 	}
 
+	getActiveTab() {
+		var path = this.props.location.pathname;
+		var tab = 'status';
+
+		switch(path) {
+			case '/settings/commands':
+				tab = 'commands';
+				break;
+			case '/settings/plugins':
+				tab = 'plugins';
+				break;
+		}
+
+		return tab;
+	}
+
 	render() {
         return (
             <Container>
@@ -65,7 +83,7 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 							<React.Fragment>
 								<small>Settings</small>
 
-								<Tabs id="SettingsPage-Tabs" vertical className="SettingsPage-Tabs mt-1" defaultSelectedTabId="status" onChange={this.handleTabSelection}>
+								<Tabs id="SettingsPage-Tabs" vertical className="SettingsPage-Tabs mt-1" selectedTabId={this.getActiveTab()} onChange={this.handleTabSelection}>
 									<Tab id="status" className="bp3-fill" title="Status" />
 									<Tab id="commands" className="bp3-fill">Commands</Tab>
 									<Tab id="plugins" className="bp3-fill">Plugins</Tab>
