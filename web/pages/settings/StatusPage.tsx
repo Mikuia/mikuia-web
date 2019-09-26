@@ -67,8 +67,6 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
 	render() {
         return (
             <React.Fragment>
-				<small>Status</small>
-				<br />
 				{this.state.loading ? <Spinner size={Spinner.SIZE_SMALL} /> : (
 					<div className="mt-2">
 						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={"Mikuia is " + (this.state.status.enabled ? 'enabled' : 'disabled') + '.'}>

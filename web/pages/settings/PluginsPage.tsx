@@ -7,8 +7,6 @@ class PluginsPage extends React.Component {
 	render() {
         return (
             <React.Fragment>
-				<small>Plugins</small>
-				<br />
 				<h1>hi</h1>
 			</React.Fragment>
         )

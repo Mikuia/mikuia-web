@@ -3,7 +3,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {RouteComponentProps} from 'react-router';
 
-import {Button, Dialog, Classes, FormGroup, InputGroup, HTMLTable, Navbar, Alignment} from '@blueprintjs/core';
+import {Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup, HTMLTable, Navbar} from '@blueprintjs/core';
 
 import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
@@ -13,6 +13,8 @@ interface CommandsPageProps extends IAuthProps, RouteComponentProps {
 	selected: ITargetSelectionEntry
 }
 interface CommandsPageState {
+	commandDrawerId: string,
+	commandDrawerOpen: boolean,
 	data: {
 		aliases: any,
 		commands: any
@@ -31,6 +33,8 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		super(props);
 
 		this.state = {
+			commandDrawerId: '',
+			commandDrawerOpen: false,
 			data: {
 				aliases: {},
 				commands: {}
@@ -44,6 +48,8 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 			newCommandSubmitPending: false
 		}
 
+		this.handleCommandDrawerClose = this.handleCommandDrawerClose.bind(this);
+		this.handleCommandDrawerOpen = this.handleCommandDrawerOpen.bind(this);
 		this.handleNewCommandDialogChange = this.handleNewCommandDialogChange.bind(this);
 		this.handleNewCommandDialogClose = this.handleNewCommandDialogClose.bind(this);
 		this.handleNewCommandDialogOpen = this.handleNewCommandDialogOpen.bind(this);
@@ -58,6 +64,20 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				data: response.data,
 				loading: false,
 			});
+		});
+	}
+
+	handleCommandDrawerClose() {
+		this.setState({
+			commandDrawerId: '',
+			commandDrawerOpen: false
+		});
+	}
+
+	handleCommandDrawerOpen(commandId) {
+		this.setState({
+			commandDrawerId: commandId,
+			commandDrawerOpen: true
 		});
 	}
 
@@ -102,7 +122,6 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 	render() {
         return (
             <React.Fragment>
-				<small>Commands</small>
 				<Navbar className="mt-1">
 					<Navbar.Group align={Alignment.LEFT}>
 						<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
@@ -127,11 +146,32 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 									<td>{alias}</td>
 									<td>{commandId}</td>
 									<td>{this.state.data.commands[commandId].handler}</td>
+									<td>
+										<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>Edit</Button>
+									</td>
 								</tr>
 							);
 						})}
 					</tbody>
 				</HTMLTable>
+
+				<Drawer
+					className={Classes.DARK}
+					icon="edit"
+					isOpen={this.state.commandDrawerOpen}
+					onClose={this.handleCommandDrawerClose}
+					title={`Editing command ${this.state.commandDrawerId}`}
+				>
+					<div className={Classes.DRAWER_BODY}>
+						<div className={Classes.DIALOG_BODY}>
+
+						</div>
+						<div className={Classes.DIALOG_FOOTER}>
+						
+						</div>
+					</div>
+				</Drawer>
+
 
 				<Dialog
 					className={Classes.DARK}

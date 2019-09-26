@@ -2,6 +2,15 @@
 	width: 100%;
 }
 
+.SettingsPage-Sidebar {
+	small {
+		color: $gray2;
+		font-size: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+}
+
 .SettingsPage-Tabs .bp3-tab-list {
 	width: 100%;
 }

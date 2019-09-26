@@ -75,7 +75,7 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
         return (
             <Container>
 				<Flex>
-					<Box width={1/4} px={3}>
+					<Box className="SettingsPage-Sidebar" width={1/4} px={3}>
 						<small>Target</small>
 						<TargetSelection className="SettingsPage-TargetSelection mt-1" onItemSelect={this.handleTargetSelection} selected={this.state.selected} />
 						<br />
@@ -94,8 +94,6 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 					<Box width={3/4}>
 						{!this.state.selected ? (
 							<div>
-								<small>Settings</small>
-								<br />
 								<Callout className="mt-2" icon="warning-sign" intent="primary" title="Choose your platform.">
 									Select your platform from the dropdown on the left.
 								</Callout>
