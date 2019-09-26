@@ -72,6 +72,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 				label: label
 			});
 		}
+
 		return selections;
 	}
 
@@ -96,6 +97,10 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 						...this.state.profiles[service],
 						[serviceId]: response.data.profile
 					}
+				}
+			}, () => {
+				if(this.state.targets.length == 1) {
+					this.props.onItemSelect(this.getSelectorValues()[0]);
 				}
 			});
 		});
