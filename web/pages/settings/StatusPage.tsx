@@ -33,29 +33,20 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
 	}
 
 	componentDidUpdate(prevProps) {
-		if(this.props.selected.target.service != prevProps.selected.target.service && this.props.selected.target.serviceId != prevProps.selected.target.serviceId) {
-			this.updateStatus();
+		if(this.props.selected.target.service != prevProps.selected.target.service || this.props.selected.target.serviceId != prevProps.selected.target.serviceId) {
+			this.getStatus();
 		}
 	}
 
 	componentDidMount() {
-		this.updateStatus();
+		this.getStatus();
 	}
 
-	toggleStatus() {
-		var enabled = this.state.status.enabled;
-		this.setState({
+	async getStatus() {
+		await this.setState({
 			loading: true
-		}, () => {
-			axios.post('/api/target/' + this.props.selected.target.service + '/' + this.props.selected.target.serviceId + '/toggle', {
-				enable: !enabled
-			}).then(() => {
-				this.updateStatus();
-			});
 		});
-	}
 
-	updateStatus() {
 		axios.get('/api/target/' + this.props.selected.target.service + '/' + this.props.selected.target.serviceId + '/status').then((response) => {
 			this.setState({
 				loading: false,
@@ -63,6 +54,21 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
 			});
 		});
 	}
+
+	async toggleStatus() {
+		var enabled = this.state.status.enabled;
+
+		await this.setState({
+			loading: true
+		});
+		
+		axios.post('/api/target/' + this.props.selected.target.service + '/' + this.props.selected.target.serviceId + '/toggle', {
+			enable: !enabled
+		}).then(() => {
+			this.getStatus();
+		});
+	}
+
 
 	render() {
         return (

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom';
 
-import {Tab, Tabs, TabId, Callout} from '@blueprintjs/core';
+import {Callout, IconTab, Tabs, TabId} from '@blueprintjs/core';
 import {Box, Flex} from 'reflexbox';
 
 import IAuthProps from '../components/interfaces/IAuthProps';
@@ -84,9 +84,9 @@ class SettingsPage extends React.Component<SettingsPageProps, SettingsPageState>
 								<small>Settings</small>
 
 								<Tabs id="SettingsPage-Tabs" vertical className="SettingsPage-Tabs mt-1" selectedTabId={this.getActiveTab()} onChange={this.handleTabSelection}>
-									<Tab id="status" className="bp3-fill" title="Status" />
-									<Tab id="commands" className="bp3-fill">Commands</Tab>
-									<Tab id="plugins" className="bp3-fill">Plugins</Tab>
+									<Tab id="status" className="bp3-fill"><Icon icon="pulse" className="mr-2" />Status</Tab>
+									<Tab id="commands" className="bp3-fill"><Icon icon="console" className="mr-2" />Commands</Tab>
+									<Tab id="plugins" className="bp3-fill"><Icon icon="code-block" className="mr-2" />Plugins</Tab>
 								</Tabs>
 							</React.Fragment>
 						)}

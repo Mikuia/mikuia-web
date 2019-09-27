@@ -36,6 +36,10 @@ export class App {
 			var serviceId = services[service];
 
 			if(service == targetService && serviceId == targetServiceId) return true;
+			if(service == targetService) {
+				var isAuthorized = await this.db.sismemberAsync(`target:${targetService}:${targetServiceId}:permissions`, serviceId);
+				if(isAuthorized) return true;
+			}
 		}
 
 		return false;
@@ -178,6 +182,15 @@ export class App {
 						service: 'twitch',
 						serviceId: serviceId
 					});
+				} else {
+					var userTargets = await this.db.smembersAsync(`user:${req.user!.id}:service:${service}:targets`);
+
+					for(var targetId of userTargets) {
+						targets.push({
+							service: service,
+							serviceId: targetId
+						});
+					}
 				}
 			}
 
@@ -215,9 +228,28 @@ export class App {
 		// this.app.delete('/api/target/:service/:serviceId/command/:commandId', async (req, res) => {
 		// 	var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
 		// 	if(!targetAuth) return res.sendStatus(403);
-
-
 		// });
+
+		this.app.get('/api/target/:service/:serviceId', async (req, res) => {
+			var target = await this.db.hgetallAsync(`target:${req.params.service}:${req.params.serviceId}`);
+			var result = {
+				image: '',
+				name: req.params.service + ':' + req.params.serviceId
+			}
+
+			if(target) result = target;
+			if(!target && req.params.service == 'twitch') {
+				var profile = await this.users.getServiceProfile(req.params.service, req.params.serviceId) as any;
+				if(profile) {
+					result.image = profile.profile_image_url;
+					result.name = profile.display_name;
+				}
+			}
+
+			res.json({
+				target: result
+			});
+		});
 
 		this.app.get('/api/target/:service/:serviceId/commands', async (req, res) => {
 			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);

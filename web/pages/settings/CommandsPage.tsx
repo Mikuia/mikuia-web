@@ -3,7 +3,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {RouteComponentProps} from 'react-router';
 
-import {Alert, Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup, Intent, HTMLTable, Navbar, Spinner} from '@blueprintjs/core';
+import {Alert, Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup, Intent, HTMLTable, Navbar, NonIdealState, Spinner} from '@blueprintjs/core';
 
 import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
@@ -61,11 +61,23 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		this.handleRemoveCommandAlertClose = this.handleRemoveCommandAlertClose.bind(this);
 		this.handleRemoveCommandAlertOpen = this.handleRemoveCommandAlertOpen.bind(this);
 		this.handleRemoveCommandAlertSubmit = this.handleRemoveCommandAlertSubmit.bind(this);
+	}
 
+	componentDidUpdate(prevProps) {
+		if(this.props.selected.target.service != prevProps.selected.target.service || this.props.selected.target.serviceId != prevProps.selected.target.serviceId) {
+			this.getCommands();
+		}
+	}
+
+	componentDidMount() {
 		this.getCommands();
 	}
 
-	getCommands() {
+	async getCommands() {
+		await this.setState({
+			loading: true
+		});
+
 		axios.get('/api/target/' + this.props.selected.target.service + '/' + this.props.selected.target.serviceId + '/commands').then((response) => {
 			this.setState({
 				data: response.data,
@@ -149,43 +161,55 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 
 	render() {
         return (
-            <React.Fragment>
-				<Navbar className="mt-1">
-					<Navbar.Group align={Alignment.LEFT}>
-						<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
-					</Navbar.Group>
-				</Navbar>
-
-				<HTMLTable interactive striped className="CommandsPage-Table mt-2">
-					<thead>
-						<tr>
-							<th>Alias</th>
-							<th>Command</th>
-							<th style={{width: '20%'}}>Handler</th>
-							<th style={{width: '20%'}}>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{!this.state.loading && Object.keys(this.state.data.aliases).map((alias) => {
-							var commandId = this.state.data.aliases[alias];
-
-							return (
-								<tr key={commandId}>
-									<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{alias}</td>
-									<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{commandId}</td>
-									<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{this.state.data.commands[commandId].handler}</td>
-									<td>
-										<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>Edit</Button>
-										{' '}
-										<Button onClick={() => this.handleRemoveCommandAlertOpen(commandId)} intent="danger">Remove</Button>
-									</td>
+            <>
+				{!this.state.loading && Object.keys(this.state.data.aliases).length > 0 &&
+					<>
+						<Navbar className="mt-1">
+							<Navbar.Group align={Alignment.LEFT}>
+								<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
+							</Navbar.Group>
+						</Navbar>
+						<HTMLTable interactive striped className="CommandsPage-Table mt-2">
+							<thead>
+								<tr>
+									<th>Alias</th>
+									<th>Command</th>
+									<th style={{width: '20%'}}>Handler</th>
+									<th style={{width: '20%'}}>Actions</th>
 								</tr>
-							);
-						})}
-					</tbody>
-				</HTMLTable>
+							</thead>
+							<tbody>
+								{!this.state.loading && Object.keys(this.state.data.aliases).map((alias) => {
+									var commandId = this.state.data.aliases[alias];
 
-				{this.state.loading && <Spinner size={Spinner.SIZE_SMALL} />}
+									return (
+										<tr key={commandId}>
+											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{alias}</td>
+											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{commandId}</td>
+											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{this.state.data.commands[commandId].handler}</td>
+											<td>
+												<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>Edit</Button>
+												{' '}
+												<Button onClick={() => this.handleRemoveCommandAlertOpen(commandId)} intent="danger">Remove</Button>
+											</td>
+										</tr>
+									);
+								})}
+							</tbody>
+						</HTMLTable>
+					</>
+				}
+
+				{!this.state.loading && !Object.keys(this.state.data.aliases).length && 
+					<NonIdealState
+						icon="console"
+						title="No commands defined"
+						description={<>There are no commands for this target.<br />You can always create some.</>}
+						action={<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>}
+					/>
+				}
+
+				{this.state.loading && <><br /><Spinner size={Spinner.SIZE_SMALL} /></>}
 
 				<Drawer
 					className={Classes.DARK}
@@ -249,8 +273,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 						Are you sure you want to remove command <b>{this.state.removeCommandAlertId}</b> and all its settings?
 					</p>
 				</Alert>
-
-			</React.Fragment>
+			</>
         )
 	}
 }

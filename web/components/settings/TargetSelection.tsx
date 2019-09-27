@@ -3,6 +3,8 @@ import * as React from 'react';
 
 import {Button, MenuItem} from '@blueprintjs/core';
 import {Select, ItemRenderer} from '@blueprintjs/select';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {IconName} from '@fortawesome/fontawesome-svg-core';
 
 import ITarget from '../interfaces/ITarget';
 import ITargetSelectionEntry from '../interfaces/ITargetSelectionEntry';
@@ -18,7 +20,8 @@ const TargetItemRenderer: ItemRenderer<ITargetSelectionEntry> = (entry, {handleC
 		<MenuItem
 			active={modifiers.active}
 			disabled={modifiers.disabled}
-			label={Common.SERVICE_NAMES[entry.target.service]}
+			icon={<img src={entry.image} />}
+			labelElement={<FontAwesomeIcon icon={['fab', entry.target.service as IconName]} />}
 			key={entry.target.serviceId}
 			popoverProps={{
 				fill: true
@@ -56,11 +59,11 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 		var selections: ITargetSelectionEntry[] = [];
 		for(var target of this.state.targets) {
 			var displayName = target.serviceId;
-			var label = target.serviceId;
+			var image = '';
 
 			if(this.state.profiles[target.service] && this.state.profiles[target.service][target.serviceId]) {
-				displayName = this.state.profiles[target.service][target.serviceId].displayName;
-				label = displayName + ' (' + Common.SERVICE_NAMES[target.service] + ')';
+				displayName = this.state.profiles[target.service][target.serviceId].name;
+				image = this.state.profiles[target.service][target.serviceId].image;
 			}
 
 			selections.push({
@@ -69,7 +72,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 					serviceId: target.serviceId
 				},
 				displayName: displayName,
-				label: label
+				image: image,
 			});
 		}
 
@@ -89,13 +92,13 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 	}
 
 	getTargetProfile(service, serviceId) {
-		axios.get('/api/profile/' + service + '/' + serviceId).then((response) => {
+		axios.get('/api/target/' + service + '/' + serviceId).then((response) => {
 			this.setState({
 				profiles: {
 					...this.state.profiles,
 					[service]: {
 						...this.state.profiles[service],
-						[serviceId]: response.data.profile
+						[serviceId]: response.data.target
 					}
 				}
 			}, () => {
@@ -107,11 +110,19 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 	}
 
     render() {
+		const items = this.getSelectorValues();
+		var activeItem: ITargetSelectionEntry | null = null;
+
+		if(this.props.selected) {
+			activeItem = items.filter((i) => i.target.service == this.props.selected!.target.service && i.target.serviceId == this.props.selected!.target.serviceId)[0];
+		}
+
         return (
 			<TargetSelect
+				activeItem={activeItem}
 				className={this.props.className}
 				filterable={false}
-				items={this.getSelectorValues()}
+				items={items}
 				itemRenderer={TargetItemRenderer}
 				noResults={<MenuItem disabled={true} text="No results." />}
 				onItemSelect={this.props.onItemSelect}
@@ -120,7 +131,13 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 					usePortal: false
 				}}
 			>
-				<Button alignText="left" fill text={this.props.selected ? this.props.selected.label : "Select target"} rightIcon="caret-down" />
+				<Button
+					alignText="left"
+					fill
+					icon={this.props.selected && <img src={this.props.selected.image} />}
+					rightIcon="caret-down"
+					text={this.props.selected ? <React.Fragment>{this.props.selected.displayName} <FontAwesomeIcon className="ml-1" icon={['fab', this.props.selected.target.service as IconName]} /></React.Fragment> : "Select target"}
+				/>
 			</TargetSelect>
         )
     }
