@@ -2,7 +2,7 @@ import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom';
 
-import {Callout, IconTab, Tabs, TabId} from '@blueprintjs/core';
+import {Callout, Icon, Tab, Tabs, TabId} from '@blueprintjs/core';
 import {Box, Flex} from 'reflexbox';
 
 import IAuthProps from '../components/interfaces/IAuthProps';
