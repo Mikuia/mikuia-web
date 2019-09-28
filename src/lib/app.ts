@@ -95,7 +95,7 @@ export class App {
 		
 		this.app.use(express.static(path.resolve('web/public')));
 
-		this.app.listen(16834);
+		this.app.listen(this.settings.web.port);
 	}
 
 	setupAuth() {
