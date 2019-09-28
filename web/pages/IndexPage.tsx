@@ -8,8 +8,8 @@ class IndexPage extends React.Component {
     render() {
         return (
             <Container>
-				<h1>Headline</h1>
-				Something interesting.
+				<h1>???</h1>
+				!!!
 			</Container>
         )
     }

@@ -1,0 +1,15 @@
+{
+	"connections": {
+		"actions": {
+			"connectWith": "Connect with {{service}}",
+			"unlink": "Unlink"
+		},
+		"alerts": {
+			"onlyConnection": "Cannot unlink your only connection."
+		},
+		"details": {
+			"connectedAs": "Connected as <strong>{{name}}</strong>."
+		},
+		"title": "Connections"
+	}	
+}

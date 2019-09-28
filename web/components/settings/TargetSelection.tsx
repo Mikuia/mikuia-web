@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as React from 'react';
+import {withTranslation, WithTranslation} from 'react-i18next';
 
 import {Button, MenuItem} from '@blueprintjs/core';
 import {Select, ItemRenderer} from '@blueprintjs/select';
@@ -8,8 +9,6 @@ import {IconName} from '@fortawesome/fontawesome-svg-core';
 
 import ITarget from '../interfaces/ITarget';
 import ITargetSelectionEntry from '../interfaces/ITargetSelectionEntry';
-
-import Common from '../../common';
 
 const TargetSelect = Select.ofType<ITargetSelectionEntry>();
 
@@ -32,7 +31,7 @@ const TargetItemRenderer: ItemRenderer<ITargetSelectionEntry> = (entry, {handleC
 	)
 }
 
-interface ITargetSelectionProps {
+interface ITargetSelectionProps extends WithTranslation {
 	className: string,
 	onItemSelect: (item: ITargetSelectionEntry, event?: React.SyntheticEvent<HTMLElement, Event> | undefined) => void,
 	selected: ITargetSelectionEntry | null
@@ -110,6 +109,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 	}
 
     render() {
+		const {t} = this.props;
 		const items = this.getSelectorValues();
 		var activeItem: ITargetSelectionEntry | null = null;
 
@@ -124,7 +124,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 				filterable={false}
 				items={items}
 				itemRenderer={TargetItemRenderer}
-				noResults={<MenuItem disabled={true} text="No results." />}
+				noResults={<MenuItem disabled={true} text={t('dashboard:sidebar.select.noResults')} />}
 				onItemSelect={this.props.onItemSelect}
 				popoverProps={{
 					fill: true,
@@ -136,11 +136,11 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 					fill
 					icon={this.props.selected && <img src={this.props.selected.image} />}
 					rightIcon="caret-down"
-					text={this.props.selected ? <React.Fragment>{this.props.selected.displayName} <FontAwesomeIcon className="ml-1" icon={['fab', this.props.selected.target.service as IconName]} /></React.Fragment> : "Select target"}
+					text={this.props.selected ? <React.Fragment>{this.props.selected.displayName} <FontAwesomeIcon className="ml-1" icon={['fab', this.props.selected.target.service as IconName]} /></React.Fragment> : t('dashboard:sidebar.select.placeholder')}
 				/>
 			</TargetSelect>
         )
     }
 }
 
-export default TargetSelection;
+export default withTranslation()(TargetSelection);

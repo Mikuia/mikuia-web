@@ -13,6 +13,8 @@ import {faSpinner} from '@fortawesome/free-solid-svg-icons/faSpinner';
 
 import DefaultLayout from './layouts/DefaultLayout';
 
+import './i18n';
+
 import './styles/app.scss';
 
 FocusStyleManager.onlyShowFocusOnTabs();

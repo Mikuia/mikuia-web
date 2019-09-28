@@ -1,9 +1,8 @@
-
 @import '_global.scss';
 @import '_custom.scss';
 @import '_tools.scss';
 
-@import 'settings.scss';
+@import 'dashboard.scss';
 
 html, body {
 	background-color: $pt-dark-app-background-color;
@@ -11,6 +10,10 @@ html, body {
 
 h1, h2, h3, h4, h5, h6 {
     font-weight: 300;
+}
+
+strong {
+	font-weight: 700;
 }
 
 .bp3-menu a, .bp3-navbar a {
@@ -25,6 +28,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 1em;
 }
 
-.MikuiaNavbar.bp3-navbar .bp3-navbar-heading > img {
+.MikuiaNavbar.bp3-navbar .bp3-navbar-heading img {
 	width: 32px;
 }

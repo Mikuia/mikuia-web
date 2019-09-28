@@ -1,0 +1,8 @@
+{
+	"actions": {
+		"loginWith": "Login with {{name}}"
+	},
+	"menu": {
+		"logout": "Logout"
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"index": {
+		"communityCallout": {
+			"title": "Choose a community.",
+			"description": "Select a community from the dropdown on the left."
+		}	
+	},
+	"sidebar": {
+		"headers": {
+			"community": "Community",
+			"settings": "Settings"
+		},
+		"select": {
+			"noResults": "No results.",
+			"placeholder": "Select a community"
+		},
+		"tabs": {
+			"commands": "Commands",
+			"plugins": "Plugins",
+			"status": "Status"
+		}
+	}
+}

@@ -2,11 +2,11 @@ import axios from 'axios';
 import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {Link, Route, RouteComponentProps, withRouter} from 'react-router-dom';
+import {withTranslation, WithTranslation} from 'react-i18next';
 
 import {Alignment, Button, Menu, Navbar, Popover, Spinner} from '@blueprintjs/core';
 
 import IAuth from '../components/interfaces/IAuth';
-import IAuthProps from '../components/interfaces/IAuthProps';
 
 import AppToaster from '../components/AppToaster';
 import AuthContext from '../components/AuthContext';
@@ -14,11 +14,12 @@ import Container from '../components/Container';
 import PrivateRoute from '../components/PrivateRoute';
 
 import AccountPage from '../pages/AccountPage';
+import DashboardPage from '../pages/DashboardPage';
 import IndexPage from '../pages/IndexPage';
-import SettingsPage from '../pages/SettingsPage';
 import IApiAuthResponse from '../components/interfaces/responses/IApiAuthResponse';
+import Common from '../common';
 
-interface DefaultLayoutProps extends IAuthProps, RouteComponentProps {}
+interface DefaultLayoutProps extends RouteComponentProps, WithTranslation {}
 interface DefaultLayoutState {
 	auth: IAuth,
 	error: boolean,
@@ -84,6 +85,8 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 	}
 
 	render() {
+		const {t} = this.props;
+
 		if(this.state.error) {
 			return (
 				<div>
@@ -100,17 +103,13 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 						<Container>
 							<Navbar.Group>
 								<Navbar.Heading>
-									<img src="/images/logo.png" />
+									<Link to="/">
+										<img src="/images/logo.png" />
+									</Link>
 								</Navbar.Heading>
 								<Navbar.Divider />
 								<Link to="/">
-									<Button minimal text="Home" />
-								</Link>
-								<Link to="/account">
-									<Button minimal text="Account" />
-								</Link>
-								<Link to="/settings">
-									<Button minimal text="Settings" />
+									<Button minimal text={t('common:pages.index')} />
 								</Link>
 							</Navbar.Group>
 							<Navbar.Group align={Alignment.RIGHT}>
@@ -119,19 +118,19 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 										<Popover>
 											<Button minimal icon="user" text={this.state.auth.user.id} rightIcon="caret-down" />
 											<Menu>
-												<Menu.Item onClick={() => this.props.history.push('/settings')} tagName="span" text="Settings" />
-												<Menu.Item onClick={() => this.props.history.push('/account')} tagName="span" text="Account" />
+												<Menu.Item onClick={() => this.props.history.push('/account')} tagName="span" text={t('common:pages.account')} />
+												<Menu.Item onClick={() => this.props.history.push('/dashboard')} tagName="span" text={t('common:pages.dashboard')} />
 												<Menu.Divider />
-												<Menu.Item onClick={this.logout} text="Logout" />
+												<Menu.Item onClick={this.logout} text={t('header:menu.logout')} />
 											</Menu>
 										</Popover>
 									) : (
 										<Popover>
 											<Button minimal text="Login" />
 											<Menu>
-												<Menu.Item href="/auth/twitch" text="Login with Twitch" />
+												<Menu.Item href="/auth/twitch" text={t('header:actions.loginWith', {name: Common.SERVICE_NAMES['twitch']})} />
 												<Menu.Divider />
-												<Menu.Item href="/auth/discord" text="Login with Discord" />
+												<Menu.Item href="/auth/discord" text={t('header:actions.loginWith', {name: Common.SERVICE_NAMES['discord']})} />
 											</Menu>
 										</Popover>
 									)
@@ -148,7 +147,7 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 						<React.Fragment>
 							<Route exact path="/" component={IndexPage} />
 							<PrivateRoute path="/account" auth={this.state.auth} component={AccountPage} />
-							<PrivateRoute path="/settings" auth={this.state.auth} component={SettingsPage} />
+							<PrivateRoute path="/dashboard" auth={this.state.auth} component={DashboardPage} />
 						</React.Fragment>
 					)}
 				</div>
@@ -157,4 +156,4 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 	}
 }
 
-export default hot(module)(withRouter(DefaultLayout));
+export default hot(module)(withRouter(withTranslation()(DefaultLayout) as any));

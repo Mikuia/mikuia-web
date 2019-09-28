@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 import {hot} from 'react-hot-loader';
+import {Trans, withTranslation, WithTranslation} from 'react-i18next';
 
 import {AnchorButton, Button, Card} from '@blueprintjs/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -25,7 +26,7 @@ interface IAccountPageServices {
 	twitch?: string;
 }
 
-interface IAccountPageProps extends IAuthProps {}
+interface IAccountPageProps extends IAuthProps, WithTranslation {}
 interface IAccountPageState {
 	loading: boolean;
 	profiles: IAccountPageProfiles;
@@ -72,15 +73,16 @@ class AccountPage extends React.Component<IAccountPageProps, IAccountPageState> 
 	}
 
     render() {
+		const {t} = this.props;
 		if(!this.props.auth.user) return;
 
 		return (
 			<Container>
-				<h1 className="bp3-heading">Account</h1>
-				User ID: <b>{this.props.auth.user.id}</b>
+				<h1 className="bp3-heading">{t('common:pages.account')}</h1>
+				ID: <b>{this.props.auth.user.id}</b>
 				<br /><br />
 
-				<h2 className="bp3-heading">Connections</h2>
+				<h2 className="bp3-heading">{t('account:connections.title')}</h2>
 
 				{this.state.loading ? (
 					<FontAwesomeIcon icon={['fas', 'spinner']} spin={true} />
@@ -93,7 +95,7 @@ class AccountPage extends React.Component<IAccountPageProps, IAccountPageState> 
 					<AnchorButton className="mb-2" href="/connect/twitch">
 						<FontAwesomeIcon className="mr-1" icon={['fab', 'twitch']} />
 						{' '}
-						Connect with Twitch
+						{t('account:connections.actions.connectWith', {service: Common.SERVICE_NAMES['twitch']})}
 					</AnchorButton>
 				)}
 
@@ -103,7 +105,7 @@ class AccountPage extends React.Component<IAccountPageProps, IAccountPageState> 
 					<AnchorButton href="/connect/discord">
 						<FontAwesomeIcon className="mr-1" icon={['fab', 'discord']} />
 						{' '}
-						Connect with Discord
+						{t('account:connections.actions.connectWith', {service: Common.SERVICE_NAMES['discord']})}
 					</AnchorButton>
 				)}
 
@@ -112,6 +114,7 @@ class AccountPage extends React.Component<IAccountPageProps, IAccountPageState> 
 	}
 	
 	renderServiceDetails(data) {
+		const {t} = this.props;
 		return (
 			<Card className="mb-4" key={data.service}>
 				<h5 className={"bp3-heading color-service-" + data.service}>
@@ -120,8 +123,10 @@ class AccountPage extends React.Component<IAccountPageProps, IAccountPageState> 
 					{Common.SERVICE_NAMES[data.service]}
 				</h5>
 				
-				<p>Connected as <b>{data.name}</b>.</p>
-				<Button intent="danger" text="Unlink" onClick={() => this.unlinkService(data.service)} />
+				<p>
+					<Trans i18nKey="account:connections.details.connectedAs" values={{name: data.name}} />
+				</p>
+				<Button intent="danger" text={t('account:connections.actions.unlink')} onClick={() => this.unlinkService(data.service)} />
 			</Card>
 		)
 	}
@@ -146,10 +151,11 @@ class AccountPage extends React.Component<IAccountPageProps, IAccountPageState> 
 	}
 
 	unlinkService(service) {
+		const {t} = this.props;
 		if(Object.keys(this.state.services).length < 2) {
 			AppToaster.show({
 				intent: 'danger',
-				message: 'Cannot unlink your only connection.'
+				message: t('account:connections.alerts.onlyConnection')
 			});
 		} else {
 			axios.post('/disconnect/' + service).then((response) => {
@@ -165,4 +171,4 @@ const AccountPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(AccountPageAuth);
+export default hot(module)(withTranslation('account')(AccountPageAuth));
