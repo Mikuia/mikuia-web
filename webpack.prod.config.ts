@@ -2,7 +2,7 @@ const merge = require('webpack-merge');
 const path = require('path');
 const webpack = require('webpack');
 
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 
@@ -44,7 +44,11 @@ module.exports = merge(common, {
 		filename: 'js/[name].[contenthash].js'
 	},
 	plugins: [
-		new CleanWebpackPlugin([path.resolve(__dirname, 'web/public/js/')]),
+		new CleanWebpackPlugin({
+			cleanOnceBeforeBuildPatterns: [
+				'js/*'
+			]
+		}),
 		new HtmlWebpackPlugin({
 			title: 'Mikuia',
 			filename: 'app.html',
