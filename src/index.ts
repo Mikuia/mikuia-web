@@ -18,10 +18,9 @@ export class Web {
 
     async initDatabase(): Promise<void> {
         return new Promise((resolve) => {
-            this.db = redis.createClient(this.settings.redis.port, this.settings.redis.host, this.settings.redis.options) as PromisifiedRedisClient;
+            this.db = redis.createClient(this.settings.redis) as PromisifiedRedisClient;
         
             this.db.on('ready', () => {
-                this.db.select(this.settings.redis.db);
                 resolve();
             });
 

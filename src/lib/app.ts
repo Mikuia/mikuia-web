@@ -6,12 +6,15 @@ import * as passport from 'passport';
 import * as path from 'path';
 import * as session from 'express-session';
 
+import * as connectRedis from 'connect-redis';
+
 import * as discordStrategy from 'passport-discord';
 import * as twitchStrategy from 'passport-twitch.js';
 
 import {Commands, PromisifiedRedisClient, User, Users} from 'mikuia-shared';
 
 const isProduction = process.env.NODE_ENV == 'production';
+let RedisStore = connectRedis(session);
 
 export class App {
 	private app: express.Application;
@@ -88,7 +91,8 @@ export class App {
 		this.app.use(session({
 			resave: true,
 			saveUninitialized: false,
-			secret: 'please_change_this_later'
+			secret: this.settings.web.sessionSecret,
+			store: new RedisStore({ client: this.db })
 		}));
 		this.app.use(passport.initialize());
 		this.app.use(passport.session());

@@ -1,0 +1,30 @@
+{
+    "redis": {
+		"host": "127.0.0.1",
+		"port": 6379,
+		"db": 0,
+		"password": "YOUR_PASSWORD_HERE",
+		"socket_nodelay": true,
+		"socket_keepalive": true
+    },
+    "services": {
+		"discord": {
+			"clientId": "YOUR_DISCORD_CLIENT_ID_HERE",
+			"clientSecret": "YOUR_DISCORD_CLIENT_SECRET_HERE",
+			"callbackUrl": "http://localhost:16834/auth/discord/callback"
+		},
+		"twitch": {
+			"clientId": "YOUR_TWITCH_CLIENT_ID_HERE",
+			"clientSecret": "YOUR_TWITCH_CLIENT_SECRET_HERE",
+			"callbackUrl": "http://localhost:16834/auth/twitch/callback"
+		}
+	},
+	"web": {
+		"port": 16834,
+		"sessionSecret": "GENERATE_SOME_RANDOM_STRING_HERE_DONT_LEAVE_DEFAULT"
+	},
+    "zeromq": {
+		"address": "tcp://127.0.0.1",
+		"ports": [3000, 3001]
+    }
+}
