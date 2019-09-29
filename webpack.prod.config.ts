@@ -41,13 +41,15 @@ module.exports = merge(common, {
 		}
 	},
 	output: {
-		filename: 'js/[name].[contenthash].js'
+		filename: 'js/[name].[contenthash].js',
+		publicPath: '/'
 	},
 	plugins: [
 		new CleanWebpackPlugin({
 			cleanOnceBeforeBuildPatterns: [
 				'js/*'
-			]
+			],
+			verbose: true
 		}),
 		new HtmlWebpackPlugin({
 			title: 'Mikuia',
