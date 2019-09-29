@@ -174,21 +174,22 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 						<HTMLTable interactive striped className="CommandsPage-Table mt-2">
 							<thead>
 								<tr>
-									<th>{t('dashboard/commands:table.headings.alias')}</th>
-									<th>{t('dashboard/commands:table.headings.command')}</th>
-									<th style={{width: '20%'}}>{t('dashboard/commands:table.headings.handler')}</th>
+									<th style={{width: '20%'}}>{t('dashboard/commands:table.headings.alias')}</th>
+									<th style={{width: '10%'}}>{t('dashboard/commands:table.headings.command')}</th>
+									<th style={{width: '50%'}}>{t('dashboard/commands:table.headings.handler')}</th>
 									<th style={{width: '20%'}}>{t('dashboard/commands:table.headings.actions')}</th>
 								</tr>
 							</thead>
 							<tbody>
 								{!this.state.loading && Object.keys(this.state.data.aliases).map((alias) => {
 									var commandId = this.state.data.aliases[alias];
+									var handler = this.state.data.commands[commandId].handler;
 
 									return (
 										<tr key={commandId}>
 											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{alias}</td>
 											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{commandId}</td>
-											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{this.state.data.commands[commandId].handler}</td>
+											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{handler} - {t('handlers:' + handler)}</td>
 											<td>
 												<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>{t('common:actions.edit')}</Button>
 												{' '}
@@ -284,4 +285,4 @@ const CommandsPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(withTranslation('dashboard/commands')(CommandsPageAuth));
+export default hot(module)(withTranslation(['dashboard/commands', 'handlers'])(CommandsPageAuth));

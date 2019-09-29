@@ -6,6 +6,8 @@ import * as passport from 'passport';
 import * as path from 'path';
 import * as session from 'express-session';
 
+import {unflatten} from 'flat';
+
 import * as connectRedis from 'connect-redis';
 
 import * as discordStrategy from 'passport-discord';
@@ -14,6 +16,7 @@ import * as twitchStrategy from 'passport-twitch.js';
 import {Commands, PromisifiedRedisClient, User, Users} from 'mikuia-shared';
 
 import {AuthRoute} from './api/auth';
+import {DataRoute} from './api/data';
 import {ProfileRoute} from './api/profile';
 import {TargetRoute} from './api/target';
 
@@ -122,6 +125,7 @@ export class App {
 
 	setupRoutes() {
 		this.app.use('/api/auth', new AuthRoute(this.db).router);
+		this.app.use('/api/data', new DataRoute(this.db).router);
 		this.app.use('/api/profile', new ProfileRoute(this.db).router);
 		this.app.use('/api/target', new TargetRoute(this.db).router);
 
@@ -155,6 +159,12 @@ export class App {
 			}
 
 			res.sendStatus(200);
+		});
+
+		this.app.get('/locales/:lang/handlers.json', async (req, res) => {
+			var data = await this.db.hgetallAsync(`locale:${req.params.lang}:handlers`);
+
+			res.json(unflatten(data));
 		});
 
 		this.app.post('/logout', (req, res) => {
