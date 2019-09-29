@@ -77,10 +77,10 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
             <>
 				{this.state.loading ? <Spinner size={Spinner.SIZE_SMALL} /> : (
 					<div className="mt-2">
-						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={this.state.status.enabled ? t('dashboardStatus:statusCallout.enabled.title') : t('dashboardStatus:statusCallout.disabled.title')}>
-							{this.state.status.enabled ? t('dashboardStatus:statusCallout.enabled.description') : t('dashboardStatus:statusCallout.disabled.description')}
+						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={this.state.status.enabled ? t('dashboard/status:statusCallout.enabled.title') : t('dashboard/status:statusCallout.disabled.title')}>
+							{this.state.status.enabled ? t('dashboard/status:statusCallout.enabled.description') : t('dashboard/status:statusCallout.disabled.description')}
 						</Callout>
-						<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? t('dashboardStatus:statusCallout.actions.disable') : t('dashboardStatus:statusCallout.actions.enable')}</Button>
+						<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? t('dashboard/status:statusCallout.actions.disable') : t('dashboard/status:statusCallout.actions.enable')}</Button>
 					</div>
 				)}
 			</>
@@ -94,4 +94,4 @@ const StatusPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(withTranslation('dashboardStatus')(StatusPageAuth));
+export default hot(module)(withTranslation('dashboard/status')(StatusPageAuth));

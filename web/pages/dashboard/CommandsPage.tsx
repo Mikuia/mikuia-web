@@ -168,16 +168,16 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					<>
 						<Navbar className="mt-1">
 							<Navbar.Group align={Alignment.LEFT}>
-								<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboardCommands:actions.newCommand')} />
+								<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboard/commands:actions.newCommand')} />
 							</Navbar.Group>
 						</Navbar>
 						<HTMLTable interactive striped className="CommandsPage-Table mt-2">
 							<thead>
 								<tr>
-									<th>{t('dashboardCommands:table.headings.alias')}</th>
-									<th>{t('dashboardCommands:table.headings.command')}</th>
-									<th style={{width: '20%'}}>{t('dashboardCommands:table.headings.handler')}</th>
-									<th style={{width: '20%'}}>{t('dashboardCommands:table.headings.actions')}</th>
+									<th>{t('dashboard/commands:table.headings.alias')}</th>
+									<th>{t('dashboard/commands:table.headings.command')}</th>
+									<th style={{width: '20%'}}>{t('dashboard/commands:table.headings.handler')}</th>
+									<th style={{width: '20%'}}>{t('dashboard/commands:table.headings.actions')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -205,9 +205,9 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				{!this.state.loading && !Object.keys(this.state.data.aliases).length && 
 					<NonIdealState
 						icon="console"
-						title={t('dashboardCommands:alerts.noCommandsDefined.title')}
-						description={<><Trans i18nKey="dashboardCommands:alerts.noCommandsDefined.description" /></>}
-						action={<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboardCommands:actions.newCommand')} />}
+						title={t('dashboard/commands:alerts.noCommandsDefined.title')}
+						description={<><Trans i18nKey="dashboard/commands:alerts.noCommandsDefined.description" /></>}
+						action={<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboard/commands:actions.newCommand')} />}
 					/>
 				}
 
@@ -218,7 +218,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					icon="edit"
 					isOpen={this.state.commandDrawerOpen}
 					onClose={this.handleCommandDrawerClose}
-					title={t('dashboardCommands:drawer.title', {commandId: this.state.commandDrawerId})}
+					title={t('dashboard/commands:drawer.title', {commandId: this.state.commandDrawerId})}
 				>
 					<div className={Classes.DRAWER_BODY}>
 						<div className={Classes.DIALOG_BODY}>
@@ -235,19 +235,19 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					icon="plus"
 					isOpen={this.state.newCommandDialogOpen}
 					onClose={this.handleNewCommandDialogClose}
-					title={t('dashboardCommands:actions.newCommand')}
+					title={t('dashboard/commands:actions.newCommand')}
 				>
 					<div className={Classes.DIALOG_BODY}>
 						<FormGroup
-							helperText={t('dashboardCommands:newCommand.alias.description')}
-							label={t('dashboardCommands:newCommand.alias.title')}
+							helperText={t('dashboard/commands:newCommand.alias.description')}
+							label={t('dashboard/commands:newCommand.alias.title')}
 							labelFor="alias"
 						>
 							<InputGroup id="alias" name="alias" placeholder="!command" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.alias} />
 						</FormGroup>
 						<FormGroup
-							helperText={t('dashboardCommands:newCommand.handler.description')}
-							label={t('dashboardCommands:newCommand.handler.title')}
+							helperText={t('dashboard/commands:newCommand.handler.description')}
+							label={t('dashboard/commands:newCommand.handler.title')}
 							labelFor="handler"
 						>
 							<InputGroup id="handler" name="handler" placeholder="base.dummy" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.handler} />
@@ -263,15 +263,15 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 
 				<Alert
 					className={Classes.DARK}
-					cancelButtonText={t('dashboardCommands:removeCommand.actions.cancel')}
-					confirmButtonText={t('dashboardCommands:removeCommand.actions.confirm')}
+					cancelButtonText={t('dashboard/commands:removeCommand.actions.cancel')}
+					confirmButtonText={t('dashboard/commands:removeCommand.actions.confirm')}
 					icon="trash"
 					intent={Intent.DANGER}
 					isOpen={this.state.removeCommandAlertOpen}
 					onCancel={this.handleRemoveCommandAlertClose}
 					onConfirm={this.handleRemoveCommandAlertSubmit}
 				>
-					<p>{<Trans i18nKey="dashboardCommands:removeCommand.description" values={{commandId: this.state.removeCommandAlertId}} />}</p>
+					<p>{<Trans i18nKey="dashboard/commands:removeCommand.description" values={{commandId: this.state.removeCommandAlertId}} />}</p>
 				</Alert>
 			</>
         )
@@ -284,4 +284,4 @@ const CommandsPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(withTranslation('dashboardCommands')(CommandsPageAuth));
+export default hot(module)(withTranslation('dashboard/commands')(CommandsPageAuth));
