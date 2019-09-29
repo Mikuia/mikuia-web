@@ -13,6 +13,10 @@ import * as twitchStrategy from 'passport-twitch.js';
 
 import {Commands, PromisifiedRedisClient, User, Users} from 'mikuia-shared';
 
+import {AuthRoute} from './api/auth';
+import {ProfileRoute} from './api/profile';
+import {TargetRoute} from './api/target';
+
 const isProduction = process.env.NODE_ENV == 'production';
 let RedisStore = connectRedis(session);
 
@@ -29,23 +33,6 @@ export class App {
 		this.setupApp();
 		this.setupAuth();
 		this.setupRoutes();
-	}
-
-	async checkTargetAuth(user, targetService, targetServiceId) {
-		if(!user) return false;
-
-		var services = await this.users.getServicesByUserId(user.id);
-		for(var service of Object.keys(services)) {
-			var serviceId = services[service];
-
-			if(service == targetService && serviceId == targetServiceId) return true;
-			if(service == targetService) {
-				var isAuthorized = await this.db.sismemberAsync(`target:${targetService}:${targetServiceId}:permissions`, serviceId);
-				if(isAuthorized) return true;
-			}
-		}
-
-		return false;
 	}
 
 	async handleAuth(service, req, profile, done) {
@@ -134,178 +121,9 @@ export class App {
 	}
 
 	setupRoutes() {
-		this.app.get('/api/auth', (req, res) => {
-			res.status(200).json({
-				user: req.user ? req.user : null
-			});
-		});
-
-		this.app.get('/api/auth/profile/:service', async (req, res) => {
-			if(!req.isAuthenticated()) return res.status(401).json({
-				service: null
-			});
-
-			var services = await this.users.getServicesByUserId(req.user!.id);
-
-			if(services[req.params.service] == undefined) return res.json({
-				service: null
-			});
-
-			var profile = await this.users.getServiceProfile(req.params.service, services[req.params.service]);
-
-			console.log(profile);
-
-			res.json({
-				service: profile
-			});
-		});
-
-		this.app.get('/api/auth/services', async (req, res) => {
-			if(!req.isAuthenticated()) res.status(401).json({});
-
-			var services = await this.users.getServicesByUserId(req.user!.id);
-
-			res.json({
-				services: services
-			});
-		});
-
-		this.app.get('/api/auth/targets', async (req, res) => {
-			if(!req.isAuthenticated()) res.status(401).json([]);
-
-			var services = await this.users.getServicesByUserId(req.user!.id);
-			var targets = [] as any;
-
-			for(var service of Object.keys(services)) {
-				var serviceId = services[service];
-
-				console.log(service + ': ' + serviceId);
-
-				if(service == 'twitch') {
-					targets.push({
-						service: 'twitch',
-						serviceId: serviceId
-					});
-				} else {
-					var userTargets = await this.db.smembersAsync(`user:${req.user!.id}:service:${service}:targets`);
-
-					for(var targetId of userTargets) {
-						targets.push({
-							service: service,
-							serviceId: targetId
-						});
-					}
-				}
-			}
-
-			res.json({
-				targets: targets
-			});
-		});
-
-		this.app.get('/api/profile/:service/:serviceId', async (req, res) => {
-			var profile = await this.users.getServiceProfile(req.params.service, req.params.serviceId) as any;
-			var result = {} as any;
-
-			if(profile) {
-				switch(req.params.service) {
-					case 'discord':
-						result.avatar = 'https://cdn.discordapp.com/avatars/' + profile.id + '/' + profile.avatar + '.png'
-						result.displayName = profile.username + '#' + profile.discriminator;
-						result.id = profile.id;
-						result.username = profile.username + '#' + profile.discriminator;
-						break;
-					case 'twitch':
-						result.avatar = profile.profile_image_url;
-						result.displayName = profile.display_name;
-						result.id = profile.id;
-						result.username = profile.login;
-						break;
-				}
-			}
-
-			res.json({
-				profile: result
-			});
-		});
-
-		// this.app.delete('/api/target/:service/:serviceId/command/:commandId', async (req, res) => {
-		// 	var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
-		// 	if(!targetAuth) return res.sendStatus(403);
-		// });
-
-		this.app.get('/api/target/:service/:serviceId', async (req, res) => {
-			var target = await this.db.hgetallAsync(`target:${req.params.service}:${req.params.serviceId}`);
-			var result = {
-				image: '',
-				name: req.params.service + ':' + req.params.serviceId
-			}
-
-			if(target) result = target;
-			if(!target && req.params.service == 'twitch') {
-				var profile = await this.users.getServiceProfile(req.params.service, req.params.serviceId) as any;
-				if(profile) {
-					result.image = profile.profile_image_url;
-					result.name = profile.display_name;
-				}
-			}
-
-			res.json({
-				target: result
-			});
-		});
-
-		this.app.get('/api/target/:service/:serviceId/commands', async (req, res) => {
-			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
-			if(!targetAuth) return res.sendStatus(403);
-
-			var aliases = await this.commands.getAliases(req.params.service, req.params.serviceId);
-			var commands = await this.commands.getAll(req.params.service, req.params.serviceId);
-			res.json({
-				aliases: aliases,
-				commands: commands
-			});
-		});
-
-		this.app.post('/api/target/:service/:serviceId/commands', async (req, res) => {
-			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
-			if(!targetAuth) return res.sendStatus(403);
-
-			var command = await this.commands.create(req.params.service, req.params.serviceId, req.body.handler);
-			await this.commands.addAlias(req.params.service, req.params.serviceId, req.body.alias, command.id);
-
-			res.json({
-				id: command.id
-			});
-		});
-
-		this.app.get('/api/target/:service/:serviceId/status', async (req, res) => {
-			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
-			if(!targetAuth) return res.sendStatus(403);
-
-			var enabled = await this.db.sismemberAsync('service:' + req.params.service + ':targets:enabled', req.params.serviceId);
-
-			res.json({
-				status: {
-					enabled: enabled ? true : false
-				}
-			});
-		});
-
-		this.app.post('/api/target/:service/:serviceId/toggle', async (req, res) => {
-			var targetAuth = await this.checkTargetAuth(req.user, req.params.service, req.params.serviceId);
-			if(!targetAuth) return res.sendStatus(403);
-
-			if(req.body.enable == undefined) return res.sendStatus(400);
-
-			if(req.body.enable) {
-				await this.db.saddAsync('service:' + req.params.service + ':targets:enabled', req.params.serviceId);
-			} else {
-				await this.db.sremAsync('service:' + req.params.service + ':targets:enabled', req.params.serviceId);
-			}
-
-			res.sendStatus(200);
-		});
+		this.app.use('/api/auth', new AuthRoute(this.db).router);
+		this.app.use('/api/profile', new ProfileRoute(this.db).router);
+		this.app.use('/api/target', new TargetRoute(this.db).router);
 
 		this.app.get('/api/*', (req, res) => {
 			res.json({});
