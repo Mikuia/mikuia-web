@@ -2,7 +2,7 @@
 	"index": {
 		"communityCallout": {
 			"title": "Choose a community.",
-			"description": "Select a community from the dropdown on the left."
+			"description": "Select or add a community using the selection on the left."
 		}	
 	},
 	"sidebar": {

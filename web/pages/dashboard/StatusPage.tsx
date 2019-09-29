@@ -78,9 +78,11 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
 				{this.state.loading ? <Spinner size={Spinner.SIZE_SMALL} /> : (
 					<div className="mt-2">
 						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={this.state.status.enabled ? t('dashboard/status:statusCallout.enabled.title') : t('dashboard/status:statusCallout.disabled.title')}>
-							{this.state.status.enabled ? t('dashboard/status:statusCallout.enabled.description') : t('dashboard/status:statusCallout.disabled.description')}
+							{this.state.status.enabled ? t(`dashboard/status:statusCallout.enabled.description.${this.props.selected.target.service}`) : t(`dashboard/status:statusCallout.disabled.description.${this.props.selected.target.service}`)}
 						</Callout>
-						<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? t('dashboard/status:statusCallout.actions.disable') : t('dashboard/status:statusCallout.actions.enable')}</Button>
+						{this.props.selected.target.service !== 'discord' && (
+							<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? t('dashboard/status:statusCallout.actions.disable') : t('dashboard/status:statusCallout.actions.enable')}</Button>
+						)}
 					</div>
 				)}
 			</>

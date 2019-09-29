@@ -6,11 +6,17 @@
 		},
 		"disabled": {
 			"title": "Mikuia is disabled.",
-			"description": "Mikuia will not join your channel, and won't respond to messages."
+			"description": {
+				"twitch": "Mikuia will not join your channel, and won't respond to commands.",
+				"discord": "Mikuia is not on the server, and won't respond to commands.\nTo enable Mikuia, invite the bot to your server again."
+			}
 		},
 		"enabled": {
 			"title": "Mikuia is enabled.",
-			"description": "Mikuia will join your channel, and will respond to messages."
+			"description": {
+				"twitch": "Mikuia will join your channel when you're live, and will respond to commands.",
+				"discord": "Mikuia is present on your server, and will respond to commands.\nTo disable Mikuia, simply kick the bot from your server."
+			}
 		}
 	}	
 }
