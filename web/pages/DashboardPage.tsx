@@ -55,7 +55,7 @@ class DashboardPage extends React.Component<DashboardPageProps, DashboardPageSta
 		this.props.history.push(path);
 	}
 
-	handleTargetSelection(selection: ITargetSelectionEntry) {
+	handleTargetSelection(selection: ITargetSelectionEntry | null) {
 		this.setState({
 			selected: selection
 		});

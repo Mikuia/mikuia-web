@@ -33,11 +33,12 @@ const TargetItemRenderer: ItemRenderer<ITargetSelectionEntry> = (entry, {handleC
 
 interface ITargetSelectionProps extends WithTranslation {
 	className: string,
-	onItemSelect: (item: ITargetSelectionEntry, event?: React.SyntheticEvent<HTMLElement, Event> | undefined) => void,
+	onItemSelect: (item: ITargetSelectionEntry | null, event?: React.SyntheticEvent<HTMLElement, Event> | undefined) => void,
 	selected: ITargetSelectionEntry | null
 }
 
 interface ITargetSelectionState {
+	loading: boolean,
 	profiles: object,
 	targets: ITarget[]
 }
@@ -47,6 +48,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 		super(props);
 
 		this.state = {
+			loading: true,
 			profiles: {},
 			targets: []
 		}
@@ -88,9 +90,14 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 		return selections;
 	}
 
-	getTargets() {
+	async getTargets() {
+		await this.setState({
+			loading: true
+		});
+
 		axios.get('/api/auth/targets').then((response) => {
 			this.setState({
+				loading: false,
 				targets: response.data.targets
 			}, () => {
 				for(var target of this.state.targets) {
@@ -119,10 +126,11 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 	}
 
 	handleWindowFocus() {
-		if(localStorage.getItem('dashboardRefreshOnFocus') === 'true') {
-			localStorage.removeItem('dashboardRefreshOnFocus');
-			this.getTargets();			
-		}
+		this.getTargets();
+		// if(localStorage.getItem('dashboardRefreshOnFocus') === 'true') {
+		// 	localStorage.removeItem('dashboardRefreshOnFocus');
+		// 	this.getTargets();
+		// }
 	}
 
     render() {
@@ -132,6 +140,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 
 		if(this.props.selected) {
 			activeItem = items.filter((i) => i.target.service == this.props.selected!.target.service && i.target.serviceId == this.props.selected!.target.serviceId)[0];
+			if(!activeItem) this.props.onItemSelect(null);
 		}
 
         return (
@@ -153,6 +162,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 					alignText="left"
 					fill
 					icon={this.props.selected && <img src={this.props.selected.image} />}
+					loading={this.state.loading}
 					rightIcon="caret-down"
 					text={this.props.selected ? <><FontAwesomeIcon className="mr-1" icon={['fab', this.props.selected.target.service as IconName]} />{this.props.selected.displayName}</> : t('dashboard:sidebar.select.placeholder')}
 				/>
