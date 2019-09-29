@@ -52,6 +52,16 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 		}
 
 		this.getTargets();
+
+		this.handleWindowFocus = this.handleWindowFocus.bind(this);
+	}
+	
+	componentDidMount() {
+		window.addEventListener('focus', this.handleWindowFocus);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('focus', this.handleWindowFocus);
 	}
 
 	getSelectorValues() {
@@ -108,6 +118,13 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 		});
 	}
 
+	handleWindowFocus() {
+		if(localStorage.getItem('dashboardRefreshOnFocus') === 'true') {
+			localStorage.removeItem('dashboardRefreshOnFocus');
+			this.getTargets();			
+		}
+	}
+
     render() {
 		const {t} = this.props;
 		const items = this.getSelectorValues();
@@ -127,8 +144,9 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 				noResults={<MenuItem disabled={true} text={t('dashboard:sidebar.select.noResults')} />}
 				onItemSelect={this.props.onItemSelect}
 				popoverProps={{
+					portalClassName: 'DashboardPage-TargetSelection-Popover',
 					fill: true,
-					usePortal: false
+					usePortal: true
 				}}
 			>
 				<Button
@@ -136,7 +154,7 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 					fill
 					icon={this.props.selected && <img src={this.props.selected.image} />}
 					rightIcon="caret-down"
-					text={this.props.selected ? <React.Fragment>{this.props.selected.displayName} <FontAwesomeIcon className="ml-1" icon={['fab', this.props.selected.target.service as IconName]} /></React.Fragment> : t('dashboard:sidebar.select.placeholder')}
+					text={this.props.selected ? <><FontAwesomeIcon className="mr-1" icon={['fab', this.props.selected.target.service as IconName]} />{this.props.selected.displayName}</> : t('dashboard:sidebar.select.placeholder')}
 				/>
 			</TargetSelect>
         )

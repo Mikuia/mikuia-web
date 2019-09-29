@@ -6,6 +6,9 @@
 		}	
 	},
 	"sidebar": {
+		"add": {
+			"discord": "Add a Discord server"
+		},
 		"headers": {
 			"community": "Community",
 			"settings": "Settings"

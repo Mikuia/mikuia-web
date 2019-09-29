@@ -4,6 +4,10 @@
 
 @import 'dashboard.scss';
 
+*, *::before, *::after {
+	border-radius: inherit;
+}
+
 html, body {
 	background-color: $pt-dark-app-background-color;
 }

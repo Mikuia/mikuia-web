@@ -3,18 +3,18 @@ import {hot} from 'react-hot-loader';
 import {withTranslation, WithTranslation} from 'react-i18next';
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom';
 
-import {Callout, Icon, Tab, Tabs, TabId} from '@blueprintjs/core';
+import {Button, Callout, ControlGroup, Icon, Menu, Popover, Tab, Tabs, TabId, Position} from '@blueprintjs/core';
 import {Box, Flex} from 'reflexbox';
 
 import IAuthProps from '../components/interfaces/IAuthProps';
 import ITargetSelectionEntry from '../components/interfaces/ITargetSelectionEntry';
 
 import AuthContext from '../components/AuthContext';
-import CommandsPage from './settings/CommandsPage';
+import CommandsPage from './dashboard/CommandsPage';
 import Container from '../components/Container';
-import PluginsPage from './settings/PluginsPage';
-import StatusPage from './settings/StatusPage';
-import TargetSelection from '../components/settings/TargetSelection';
+import PluginsPage from './dashboard/PluginsPage';
+import StatusPage from './dashboard/StatusPage';
+import TargetSelection from '../components/dashboard/TargetSelection';
 
 interface DashboardPageProps extends IAuthProps, RouteComponentProps, WithTranslation {}
 interface DashboardPageState {
@@ -33,6 +33,11 @@ class DashboardPage extends React.Component<DashboardPageProps, DashboardPageSta
 		
 		this.handleTabSelection = this.handleTabSelection.bind(this);
 		this.handleTargetSelection = this.handleTargetSelection.bind(this);
+	}
+
+	handleAddDiscord() {
+		localStorage.setItem('dashboardRefreshOnFocus', 'true');
+		window.open('https://discordapp.com/oauth2/authorize?client_id=168134212996562945&permissions=0&scope=bot');
 	}
 
 	handleTabSelection(newTabId: TabId) {
@@ -79,7 +84,15 @@ class DashboardPage extends React.Component<DashboardPageProps, DashboardPageSta
 				<Flex>
 					<Box className="DashboardPage-Sidebar" width={1/4} px={3}>
 						<small>{t('dashboard:sidebar.headers.community')}</small>
-						<TargetSelection className="DashboardPage-TargetSelection mt-1" onItemSelect={this.handleTargetSelection} selected={this.state.selected} />
+						<ControlGroup fill className="mt-1">
+							<TargetSelection className="DashboardPage-TargetSelection" onItemSelect={this.handleTargetSelection} selected={this.state.selected} />
+							<Popover position={Position.BOTTOM}>
+								<Button icon="plus" />
+								<Menu>
+									<Menu.Item icon="plus" onClick={this.handleAddDiscord} text={t('dashboard:sidebar.add.discord')} />
+								</Menu>
+							</Popover>
+						</ControlGroup>
 						<br />
 						{this.state.selected && (
 							<React.Fragment>
