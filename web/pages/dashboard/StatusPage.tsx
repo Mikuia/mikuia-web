@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 import {hot} from 'react-hot-loader';
+import {withTranslation, WithTranslation} from 'react-i18next';
 
 import {Button, Callout, Spinner} from '@blueprintjs/core';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -8,7 +9,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import AuthContext from '../../components/AuthContext';
 import ITargetSelectionEntry from '../../components/interfaces/ITargetSelectionEntry';
 
-interface StatusPageProps {
+interface StatusPageProps extends WithTranslation {
 	selected: ITargetSelectionEntry
 }
 interface StatusPageState {
@@ -71,17 +72,18 @@ class StatusPage extends React.Component<StatusPageProps, StatusPageState> {
 
 
 	render() {
+		const {t} = this.props;
         return (
-            <React.Fragment>
+            <>
 				{this.state.loading ? <Spinner size={Spinner.SIZE_SMALL} /> : (
 					<div className="mt-2">
-						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={"Mikuia is " + (this.state.status.enabled ? 'enabled' : 'disabled') + '.'}>
-							{this.state.status.enabled ? 'Mikuia will join your channel, and will respond to messages.' : 'Mikuia will not join your channel, and won\'t respond to messages.'}
+						<Callout icon={this.state.status.enabled ? 'tick' : 'cross'} intent={this.state.status.enabled ? 'success' : 'danger'} title={this.state.status.enabled ? t('dashboardStatus:statusCallout.enabled.title') : t('dashboardStatus:statusCallout.disabled.title')}>
+							{this.state.status.enabled ? t('dashboardStatus:statusCallout.enabled.description') : t('dashboardStatus:statusCallout.disabled.description')}
 						</Callout>
-						<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? 'Disable' : 'Enable'}</Button>
+						<Button className="mt-2" intent={this.state.status.enabled ? 'none' : 'success'} onClick={this.toggleStatus}>{this.state.status.enabled ? t('dashboardStatus:statusCallout.actions.disable') : t('dashboardStatus:statusCallout.actions.enable')}</Button>
 					</div>
 				)}
-				</React.Fragment>
+			</>
         )
 	}
 }
@@ -92,4 +94,4 @@ const StatusPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(StatusPageAuth);
+export default hot(module)(withTranslation('dashboardStatus')(StatusPageAuth));

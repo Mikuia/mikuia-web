@@ -1,0 +1,39 @@
+{
+	"actions": {
+		"newCommand": "New command"
+	},
+	"alerts": {
+		"noCommandsDefined": {
+			"title": "No commands defined",
+			"description": "There are no commands for this target.<br />You can always create some."
+		}
+	},
+	"drawer": {
+		"title": "Editing command {{commandId}}"
+	},
+	"newCommand": {
+		"alias": {
+			"title": "Alias",
+			"description": "That's the phrase people will write in chat."
+		},
+		"handler": {
+			"title": "Handler",
+			"description": "That's what will happen when the command is executed."
+		}
+	},
+	"removeCommand": {
+		"actions": {
+			"cancel": "No, keep it.",
+			"confirm": "Yes, remove it."
+		},
+		"description": "Are you sure you want to remove command <strong>{{commandId}}</strong> and all its settings?"
+	},
+	"table": {
+		"headings": {
+			"alias": "Alias",
+			"command": "Command",
+			"handler": "Handler",
+			"actions": "Actions"
+		}
+	}
+}

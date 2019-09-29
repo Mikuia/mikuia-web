@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as React from 'react';
 import {hot} from 'react-hot-loader';
 import {RouteComponentProps} from 'react-router';
+import {Trans, withTranslation, WithTranslation} from 'react-i18next';
 
 import {Alert, Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup, Intent, HTMLTable, Navbar, NonIdealState, Spinner} from '@blueprintjs/core';
 
@@ -9,7 +10,7 @@ import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
 import ITargetSelectionEntry from '../../components/interfaces/ITargetSelectionEntry';
 
-interface CommandsPageProps extends IAuthProps, RouteComponentProps {
+interface CommandsPageProps extends IAuthProps, RouteComponentProps, WithTranslation {
 	selected: ITargetSelectionEntry
 }
 interface CommandsPageState {
@@ -160,22 +161,23 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 	}
 
 	render() {
+		const {t} = this.props;
         return (
             <>
 				{!this.state.loading && Object.keys(this.state.data.aliases).length > 0 &&
 					<>
 						<Navbar className="mt-1">
 							<Navbar.Group align={Alignment.LEFT}>
-								<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>
+								<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboardCommands:actions.newCommand')} />
 							</Navbar.Group>
 						</Navbar>
 						<HTMLTable interactive striped className="CommandsPage-Table mt-2">
 							<thead>
 								<tr>
-									<th>Alias</th>
-									<th>Command</th>
-									<th style={{width: '20%'}}>Handler</th>
-									<th style={{width: '20%'}}>Actions</th>
+									<th>{t('dashboardCommands:table.headings.alias')}</th>
+									<th>{t('dashboardCommands:table.headings.command')}</th>
+									<th style={{width: '20%'}}>{t('dashboardCommands:table.headings.handler')}</th>
+									<th style={{width: '20%'}}>{t('dashboardCommands:table.headings.actions')}</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -188,9 +190,9 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{commandId}</td>
 											<td onClick={() => this.handleCommandDrawerOpen(commandId)}>{this.state.data.commands[commandId].handler}</td>
 											<td>
-												<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>Edit</Button>
+												<Button onClick={() => this.handleCommandDrawerOpen(commandId)}>{t('common:actions.edit')}</Button>
 												{' '}
-												<Button onClick={() => this.handleRemoveCommandAlertOpen(commandId)} intent="danger">Remove</Button>
+												<Button onClick={() => this.handleRemoveCommandAlertOpen(commandId)} intent="danger">{t('common:actions.remove')}</Button>
 											</td>
 										</tr>
 									);
@@ -203,9 +205,9 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				{!this.state.loading && !Object.keys(this.state.data.aliases).length && 
 					<NonIdealState
 						icon="console"
-						title="No commands defined"
-						description={<>There are no commands for this target.<br />You can always create some.</>}
-						action={<Button intent="primary" onClick={this.handleNewCommandDialogOpen}>New command</Button>}
+						title={t('dashboardCommands:alerts.noCommandsDefined.title')}
+						description={<><Trans i18nKey="dashboardCommands:alerts.noCommandsDefined.description" /></>}
+						action={<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboardCommands:actions.newCommand')} />}
 					/>
 				}
 
@@ -216,7 +218,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					icon="edit"
 					isOpen={this.state.commandDrawerOpen}
 					onClose={this.handleCommandDrawerClose}
-					title={`Editing command ${this.state.commandDrawerId}`}
+					title={t('dashboardCommands:drawer.title', {commandId: this.state.commandDrawerId})}
 				>
 					<div className={Classes.DRAWER_BODY}>
 						<div className={Classes.DIALOG_BODY}>
@@ -233,19 +235,19 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					icon="plus"
 					isOpen={this.state.newCommandDialogOpen}
 					onClose={this.handleNewCommandDialogClose}
-					title="New command"
+					title={t('dashboardCommands:actions.newCommand')}
 				>
 					<div className={Classes.DIALOG_BODY}>
 						<FormGroup
-							helperText="That's the phrase people will write in chat."
-							label="Alias"
+							helperText={t('dashboardCommands:newCommand.alias.description')}
+							label={t('dashboardCommands:newCommand.alias.title')}
 							labelFor="alias"
 						>
 							<InputGroup id="alias" name="alias" placeholder="!command" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.alias} />
 						</FormGroup>
 						<FormGroup
-							helperText="That's what will happen when the command is executed."
-							label="Handler"
+							helperText={t('dashboardCommands:newCommand.handler.description')}
+							label={t('dashboardCommands:newCommand.handler.title')}
 							labelFor="handler"
 						>
 							<InputGroup id="handler" name="handler" placeholder="base.dummy" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.handler} />
@@ -253,25 +255,23 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					</div>
 					<div className={Classes.DIALOG_FOOTER}>
 						<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-							<Button intent="none" onClick={this.handleNewCommandDialogClose}>Cancel</Button>
-							<Button loading={this.state.newCommandSubmitPending} intent="primary" onClick={this.handleNewCommandDialogSubmit}>Add</Button>
+							<Button intent="none" onClick={this.handleNewCommandDialogClose}>{t('common:actions.cancel')}</Button>
+							<Button loading={this.state.newCommandSubmitPending} intent="primary" onClick={this.handleNewCommandDialogSubmit}>{t('common:actions.add')}</Button>
 						</div>
 					</div>
 				</Dialog>
 
 				<Alert
 					className={Classes.DARK}
-					cancelButtonText="No, keep it."
-					confirmButtonText="Yes, remove it."
+					cancelButtonText={t('dashboardCommands:removeCommand.actions.cancel')}
+					confirmButtonText={t('dashboardCommands:removeCommand.actions.confirm')}
 					icon="trash"
 					intent={Intent.DANGER}
 					isOpen={this.state.removeCommandAlertOpen}
 					onCancel={this.handleRemoveCommandAlertClose}
 					onConfirm={this.handleRemoveCommandAlertSubmit}
 				>
-					<p>
-						Are you sure you want to remove command <b>{this.state.removeCommandAlertId}</b> and all its settings?
-					</p>
+					<p>{<Trans i18nKey="dashboardCommands:removeCommand.description" values={{commandId: this.state.removeCommandAlertId}} />}</p>
 				</Alert>
 			</>
         )
@@ -284,4 +284,4 @@ const CommandsPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(CommandsPageAuth);
+export default hot(module)(withTranslation('dashboardCommands')(CommandsPageAuth));

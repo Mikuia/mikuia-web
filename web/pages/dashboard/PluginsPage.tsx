@@ -6,9 +6,9 @@ import AuthContext from '../../components/AuthContext';
 class PluginsPage extends React.Component {
 	render() {
         return (
-            <React.Fragment>
+            <>
 				<h1>hi</h1>
-			</React.Fragment>
+			</>
         )
 	}
 }

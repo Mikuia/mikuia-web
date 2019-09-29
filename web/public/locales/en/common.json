@@ -1,4 +1,16 @@
 {
+	"actions": {
+		"add": "Add",
+		"cancel": "Cancel",
+		"close": "Close",
+		"edit": "Edit",
+		"no": "No",
+		"remove": "Remove",
+		"yes": "Yes"
+	},
+	"alerts": {
+		"sessionChanged": "Session changed, refreshing login info..."
+	},
 	"pages": {
 		"account": "My Account",
 		"dashboard": "Dashboard",

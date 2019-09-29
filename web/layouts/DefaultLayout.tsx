@@ -52,11 +52,12 @@ class DefaultLayout extends React.Component<DefaultLayoutProps, DefaultLayoutSta
 	}
 
 	componentDidMount() {
+		const {t} = this.props;
 		window.addEventListener('storage', (e) => {
 			if(e.storageArea === localStorage && e.key == 'loggedIn') {
 				AppToaster.show({
 					intent: 'warning',
-					message: 'Session changed, refreshing login info...'
+					message: t('common:alerts.sessionChanged')
 				});
 				this.getAuth();
 			}

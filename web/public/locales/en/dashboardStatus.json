@@ -1,0 +1,16 @@
+{
+	"statusCallout": {
+		"actions": {
+			"disable": "Disable",
+			"enable": "Enable"
+		},
+		"disabled": {
+			"title": "Mikuia is disabled.",
+			"description": "Mikuia will not join your channel, and won't respond to messages."
+		},
+		"enabled": {
+			"title": "Mikuia is enabled.",
+			"description": "Mikuia will join your channel, and will respond to messages."
+		}
+	}	
+}
