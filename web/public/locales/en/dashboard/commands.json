@@ -19,6 +19,10 @@
 		"handler": {
 			"title": "Handler",
 			"description": "That's what will happen when the command is executed."
+		},
+		"select": {
+			"noHandlers": "No handlers found.",
+			"placeholder": "Select a handler"
 		}
 	},
 	"removeCommand": {

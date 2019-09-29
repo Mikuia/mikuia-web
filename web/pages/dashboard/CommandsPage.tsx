@@ -9,10 +9,12 @@ import {Alert, Alignment, Button, Classes, Dialog, Drawer, FormGroup, InputGroup
 import AuthContext from '../../components/AuthContext';
 import IAuthProps from '../../components/interfaces/IAuthProps';
 import ITargetSelectionEntry from '../../components/interfaces/ITargetSelectionEntry';
+import NewCommand from './commands/NewCommand';
 
 interface CommandsPageProps extends IAuthProps, RouteComponentProps, WithTranslation {
 	selected: ITargetSelectionEntry
 }
+
 interface CommandsPageState {
 	commandDrawerId: string,
 	commandDrawerOpen: boolean,
@@ -21,12 +23,7 @@ interface CommandsPageState {
 		commands: any
 	},
 	loading: boolean,
-	newCommand: {
-		alias: string,
-		handler: string
-	},
-	newCommandDialogOpen: boolean,
-	newCommandSubmitPending: boolean,
+	newCommandOpen: boolean,
 	removeCommandAlertId: string,
 	removeCommandAlertOpen: boolean
 }
@@ -43,22 +40,15 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 				commands: {}
 			},
 			loading: true,
-			newCommand: {
-				alias: '',
-				handler: '',
-			},
-			newCommandDialogOpen: false,
-			newCommandSubmitPending: false,
+			newCommandOpen: false,
 			removeCommandAlertId: '',
 			removeCommandAlertOpen: false
 		}
 
 		this.handleCommandDrawerClose = this.handleCommandDrawerClose.bind(this);
 		this.handleCommandDrawerOpen = this.handleCommandDrawerOpen.bind(this);
-		this.handleNewCommandDialogChange = this.handleNewCommandDialogChange.bind(this);
-		this.handleNewCommandDialogClose = this.handleNewCommandDialogClose.bind(this);
-		this.handleNewCommandDialogOpen = this.handleNewCommandDialogOpen.bind(this);
-		this.handleNewCommandDialogSubmit = this.handleNewCommandDialogSubmit.bind(this);
+		this.handleNewCommandClose = this.handleNewCommandClose.bind(this);
+		this.handleNewCommandOpen = this.handleNewCommandOpen.bind(this);
 		this.handleRemoveCommandAlertClose = this.handleRemoveCommandAlertClose.bind(this);
 		this.handleRemoveCommandAlertOpen = this.handleRemoveCommandAlertOpen.bind(this);
 		this.handleRemoveCommandAlertSubmit = this.handleRemoveCommandAlertSubmit.bind(this);
@@ -101,41 +91,16 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 		});
 	}
 
-	handleNewCommandDialogChange(e) {
+	handleNewCommandClose(event, shouldGetCommands: boolean = false) {
+		if(shouldGetCommands) this.getCommands();
 		this.setState({
-			newCommand: {
-				...this.state.newCommand,
-				[e.target.name]: e.target.value
-			}
-		})
-	}
-
-	handleNewCommandDialogClose() {
-		this.setState({
-			newCommandDialogOpen: false
+			newCommandOpen: false
 		});
 	}
 
-	handleNewCommandDialogOpen() {
+	handleNewCommandOpen() {
 		this.setState({
-			newCommandDialogOpen: true
-		});
-	}
-
-	handleNewCommandDialogSubmit() {
-		this.setState({
-			newCommandSubmitPending: true
-		}, () => {
-			axios.post(`/api/target/${this.props.selected.target.service}/${this.props.selected.target.serviceId}/commands`, {
-				alias: this.state.newCommand.alias,
-				handler: this.state.newCommand.handler
-			}).then((response) => {
-				this.handleNewCommandDialogClose();
-				this.getCommands();
-				this.setState({
-					newCommandSubmitPending: false
-				});
-			});
+			newCommandOpen: true
 		});
 	}
 
@@ -168,7 +133,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					<>
 						<Navbar className="mt-1">
 							<Navbar.Group align={Alignment.LEFT}>
-								<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboard/commands:actions.newCommand')} />
+								<Button intent="primary" onClick={this.handleNewCommandOpen} text={t('dashboard/commands:actions.newCommand')} />
 							</Navbar.Group>
 						</Navbar>
 						<HTMLTable interactive striped className="CommandsPage-Table mt-2">
@@ -208,7 +173,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 						icon="console"
 						title={t('dashboard/commands:alerts.noCommandsDefined.title')}
 						description={<><Trans i18nKey="dashboard/commands:alerts.noCommandsDefined.description" /></>}
-						action={<Button intent="primary" onClick={this.handleNewCommandDialogOpen} text={t('dashboard/commands:actions.newCommand')} />}
+						action={<Button intent="primary" onClick={this.handleNewCommandOpen} text={t('dashboard/commands:actions.newCommand')} />}
 					/>
 				}
 
@@ -231,36 +196,7 @@ class CommandsPage extends React.Component<CommandsPageProps, CommandsPageState>
 					</div>
 				</Drawer>
 
-				<Dialog
-					className={Classes.DARK}
-					icon="plus"
-					isOpen={this.state.newCommandDialogOpen}
-					onClose={this.handleNewCommandDialogClose}
-					title={t('dashboard/commands:actions.newCommand')}
-				>
-					<div className={Classes.DIALOG_BODY}>
-						<FormGroup
-							helperText={t('dashboard/commands:newCommand.alias.description')}
-							label={t('dashboard/commands:newCommand.alias.title')}
-							labelFor="alias"
-						>
-							<InputGroup id="alias" name="alias" placeholder="!command" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.alias} />
-						</FormGroup>
-						<FormGroup
-							helperText={t('dashboard/commands:newCommand.handler.description')}
-							label={t('dashboard/commands:newCommand.handler.title')}
-							labelFor="handler"
-						>
-							<InputGroup id="handler" name="handler" placeholder="base.dummy" onChange={this.handleNewCommandDialogChange} value={this.state.newCommand.handler} />
-						</FormGroup>
-					</div>
-					<div className={Classes.DIALOG_FOOTER}>
-						<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-							<Button intent="none" onClick={this.handleNewCommandDialogClose}>{t('common:actions.cancel')}</Button>
-							<Button loading={this.state.newCommandSubmitPending} intent="primary" onClick={this.handleNewCommandDialogSubmit}>{t('common:actions.add')}</Button>
-						</div>
-					</div>
-				</Dialog>
+				<NewCommand isOpen={this.state.newCommandOpen} onClose={this.handleNewCommandClose} onOpen={this.handleNewCommandOpen} selected={this.props.selected} />
 
 				<Alert
 					className={Classes.DARK}

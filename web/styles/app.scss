@@ -25,6 +25,29 @@ strong {
 	text-decoration: none !important;
 }
 
+.bp3-menu-item strong {
+	font-weight: 600;
+	text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+}
+
+.bp3-select-popover {
+	.bp3-input-group {
+		margin-bottom: 0;
+	}
+
+	.bp3-menu {
+		padding: 0;
+
+		&:not(:first-child) {
+			padding-top: 5px;
+		}
+	}
+	
+	.bp3-popover-content {
+		padding: 5px;
+	}
+}
+
 .MikuiaNavbar.bp3-navbar {
 	background-color: mix($color-brand, black, 80%);
 	border-bottom: 1px solid mix($color-brand, black, 40%);
