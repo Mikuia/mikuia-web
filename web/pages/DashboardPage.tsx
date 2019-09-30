@@ -133,4 +133,4 @@ const DashboardPageAuth = props => (
 	</AuthContext.Consumer>
 )
 
-export default hot(module)(withRouter(withTranslation('dashboard')(DashboardPageAuth) as any));
+export default hot(module)(withRouter(withTranslation(['dashboard', 'plugins'])(DashboardPageAuth) as any));

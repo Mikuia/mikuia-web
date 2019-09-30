@@ -62,7 +62,7 @@ class NewCommand extends React.Component<NewCommandProps, NewCommandState> {
 		if(exactMatch) {
 			return normalizedName === normalizedQuery;
 		} else {
-			return `${normalizedName} - ${t('handlers:' + entry.handler)}`.toLowerCase().indexOf(normalizedQuery) >= 0;
+			return `${normalizedName} - ${t(`handlers:${entry.handler}`)} - ${t(`plugins:${entry.plugin}.name`)}`.toLowerCase().indexOf(normalizedQuery) >= 0;
 		}
 	}
 
@@ -130,7 +130,7 @@ class NewCommand extends React.Component<NewCommandProps, NewCommandState> {
 			<MenuItem
 				active={modifiers.active}
 				disabled={modifiers.disabled}
-				label={entry.plugin}
+				labelElement={Common.highlightText(t(`plugins:${entry.plugin}.name`), query)}
 				key={entry.handler}
 				popoverProps={{
 					fill: true
