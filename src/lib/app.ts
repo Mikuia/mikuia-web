@@ -167,6 +167,12 @@ export class App {
 			res.json(unflatten(data));
 		});
 
+		this.app.get('/locales/:lang/plugins.json', async (req, res) => {
+			var data = await this.db.hgetallAsync(`locale:${req.params.lang}:plugins`);
+
+			res.json(unflatten(data));
+		});
+
 		this.app.post('/logout', (req, res) => {
 			req.logout();
 			res.redirect('/');
