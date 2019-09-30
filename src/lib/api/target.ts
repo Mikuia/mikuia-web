@@ -71,6 +71,16 @@ export class TargetRoute extends Route {
 			});
 		});
 
+		this.router.get('/:service/:serviceId/plugins', async (req, res) => {
+			if(!this.checkTargetAuth(req)) return res.sendStatus(403);
+
+			var plugins = await this.targets.getByServiceId(req.params.service, req.params.serviceId).getPlugins();
+
+			res.json({
+				plugins: plugins
+			});
+		});
+
 		this.router.get('/:service/:serviceId/status', async (req, res) => {
 			if(!this.checkTargetAuth(req)) return res.sendStatus(403);
 
