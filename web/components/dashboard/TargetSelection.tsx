@@ -53,13 +53,12 @@ class TargetSelection extends React.Component<ITargetSelectionProps, ITargetSele
 			targets: []
 		}
 
-		this.getTargets();
-
 		this.handleWindowFocus = this.handleWindowFocus.bind(this);
 	}
 	
 	componentDidMount() {
 		window.addEventListener('focus', this.handleWindowFocus);
+		this.getTargets();
 	}
 
 	componentWillUnmount() {
